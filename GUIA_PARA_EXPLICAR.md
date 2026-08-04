@@ -93,3 +93,44 @@ No se utiliza en la contraseña porque los espacios pueden formar parte intencio
 ## 16. Estado actual de la autenticación
 
 Este formulario todavía no comprueba usuarios ni contraseñas reales. Solo verifica que los dos campos tengan contenido. La autenticación real se agregará en otra fase mediante PostgreSQL y consultas parametrizadas, después de recibir autorización.
+
+## 17. ¿Qué es un mantenimiento?
+
+Un mantenimiento es una parte del sistema que permite administrar datos básicos que otros módulos necesitarán. Clientes, entrenadores, tipos de membresías, clases, horarios, categorías, productos y proveedores son mantenimientos porque sus registros se crean y organizan antes de utilizarlos en procesos como ventas o reservas.
+
+## 18. ¿Qué significa CRUD?
+
+CRUD reúne las cuatro operaciones básicas de un mantenimiento:
+
+- `Create`: crear un registro.
+- `Read`: leer o mostrar registros.
+- `Update`: actualizar un registro existente.
+- `Delete`: eliminar un registro o, cuando convenga conservarlo, desactivarlo mediante su estado.
+
+En esta fase se prepara la base de datos que permitirá implementar esas operaciones, pero todavía no se crean los formularios.
+
+## 19. Relaciones 1:1, 1:N y N:M
+
+Una relación 1:1 significa que un registro puede estar relacionado con uno solo de la otra tabla. El ejemplo es `usuarios` con `usuarios_perfiles`, porque cada usuario puede tener un único perfil.
+
+Una relación 1:N significa que un registro principal puede relacionarse con muchos registros. Por ejemplo, una categoría puede tener muchos productos, pero cada producto pertenece a una categoría.
+
+Una relación N:M significa que varios registros de una tabla pueden relacionarse con varios de otra. Productos y proveedores tienen esta relación: un producto puede tener varios proveedores y un proveedor puede ofrecer varios productos. La tabla intermedia `productos_proveedores` guarda las combinaciones.
+
+## 20. Claves primarias y foráneas
+
+La clave primaria identifica cada registro de forma única. Por ejemplo, `id_producto` permite distinguir un producto de todos los demás.
+
+La clave foránea guarda la referencia hacia otra tabla y asegura que el registro relacionado exista. Por ejemplo, `productos.id_categoria` apunta a `categorias_productos.id_categoria` e impide asignar una categoría inexistente.
+
+## 21. ¿Por qué se diseña la base antes de los formularios?
+
+La base define qué datos se guardarán, cuáles son obligatorios, qué valores son válidos y cómo se relacionan las tablas. Revisar primero esta estructura evita crear controles para datos incorrectos o tener que rehacer formularios cuando aparezcan relaciones que no se habían considerado.
+
+Después de aprobar el diseño, cada formulario podrá construirse de acuerdo con campos y reglas ya definidos.
+
+## 22. Tabla de mantenimiento y tabla de proceso
+
+Una tabla de mantenimiento guarda datos relativamente estables que sirven como catálogo o referencia, como clientes, productos, categorías o proveedores.
+
+Una tabla de proceso registra operaciones realizadas en una fecha y con participantes específicos, como una venta, una compra, un cobro o una reserva. Normalmente utiliza datos de varios mantenimientos y puede necesitar encabezados, detalles, totales y estados propios. Las tablas de proceso se definirán en fases posteriores porque no pertenecen al alcance actual.
