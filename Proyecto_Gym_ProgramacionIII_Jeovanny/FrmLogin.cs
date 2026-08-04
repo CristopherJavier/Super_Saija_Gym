@@ -1,3 +1,9 @@
+using Npgsql;
+using Proyecto_Gym_ProgramacionIII_Jeovanny.Datos;
+using Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios;
+using Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos;
+using Proyecto_Gym_ProgramacionIII_Jeovanny.Seguridad;
+
 namespace Proyecto_Gym_ProgramacionIII_Jeovanny
 {
     public partial class FrmLogin : Form
@@ -33,12 +39,103 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny
             }
         }
 
-        private void btnIniciarSesion_Click(object sender, EventArgs e)
+        private async void btnIniciarSesion_Click(object sender, EventArgs e)
         {
-            if (ValidarCampos())
+            if (!ValidarCampos())
             {
-                lblMensaje.ForeColor = Color.FromArgb(124, 142, 163);
-                lblMensaje.Text = "Datos completos. La autenticación se conectará posteriormente.";
+                return;
+            }
+
+            string usuarioEscrito = txtUsuario.Text.Trim();
+            string contrasenaEscrita = txtContrasena.Text;
+
+            btnIniciarSesion.Enabled = false;
+            lblMensaje.Text = string.Empty;
+
+            try
+            {
+                Usuario? usuario = await UsuarioRepositorio.ObtenerPorNombreUsuarioAsync(usuarioEscrito);
+
+                if (usuario is null)
+                {
+                    lblMensaje.Text = "Usuario o contraseña incorrectos.";
+                    txtContrasena.Clear();
+                    txtContrasena.Focus();
+                    return;
+                }
+
+                if (!usuario.Activo)
+                {
+                    lblMensaje.Text = "Este usuario se encuentra inactivo.";
+                    txtContrasena.Clear();
+                    txtUsuario.Focus();
+                    return;
+                }
+
+                bool contrasenaCorrecta = PasswordHelper.VerificarContrasena(
+                    contrasenaEscrita,
+                    usuario.ContrasenaHash,
+                    usuario.ContrasenaSalt);
+
+                if (!contrasenaCorrecta)
+                {
+                    lblMensaje.Text = "Usuario o contraseña incorrectos.";
+                    txtContrasena.Clear();
+                    txtContrasena.Focus();
+                    return;
+                }
+
+                SesionActual.Iniciar(usuario);
+                Hide();
+
+                using FrmPrincipal frmPrincipal = new FrmPrincipal();
+                frmPrincipal.ShowDialog();
+
+                if (frmPrincipal.CerrarSesionSolicitada)
+                {
+                    SesionActual.Cerrar();
+                    txtUsuario.Clear();
+                    txtContrasena.Clear();
+                    chkMostrarContrasena.Checked = false;
+                    txtContrasena.UseSystemPasswordChar = true;
+                    lblMensaje.Text = string.Empty;
+                    Show();
+                    txtUsuario.Focus();
+                }
+                else
+                {
+                    SesionActual.Cerrar();
+                    Close();
+                }
+            }
+            catch (NpgsqlException)
+            {
+                SesionActual.Cerrar();
+
+                if (!Visible)
+                {
+                    Show();
+                }
+
+                lblMensaje.Text = "No fue posible conectar con la base de datos.";
+            }
+            catch (Exception)
+            {
+                SesionActual.Cerrar();
+
+                if (!Visible)
+                {
+                    Show();
+                }
+
+                lblMensaje.Text = "Ocurrió un error al iniciar sesión.";
+            }
+            finally
+            {
+                if (!IsDisposed && !Disposing)
+                {
+                    btnIniciarSesion.Enabled = true;
+                }
             }
         }
 

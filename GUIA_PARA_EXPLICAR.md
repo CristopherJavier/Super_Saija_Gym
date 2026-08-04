@@ -92,7 +92,7 @@ No se utiliza en la contraseña porque los espacios pueden formar parte intencio
 
 ## 16. Estado actual de la autenticación
 
-Este formulario todavía no comprueba usuarios ni contraseñas reales. Solo verifica que los dos campos tengan contenido. La autenticación real se agregará en otra fase mediante PostgreSQL y consultas parametrizadas, después de recibir autorización.
+`FrmLogin` comprueba los campos, busca el usuario mediante una consulta parametrizada y verifica la contraseña con `PasswordHelper`. Cuando el acceso es correcto crea la sesión y abre `FrmPrincipal`. Los permisos de ventanas y los mantenimientos todavía pertenecen a fases posteriores.
 
 ## 17. ¿Qué es un mantenimiento?
 
@@ -188,7 +188,7 @@ El formulario inicial no contiene datos predeterminados. El nombre completo, el 
 5. Si el administrador se crea correctamente, abre `FrmLogin`.
 6. Si se cancela la configuración o falla la conexión inicial, termina la aplicación.
 
-El inicio de sesión todavía no compara credenciales. Conserva la validación de campos de la fase anterior.
+El inicio de sesión conserva la validación de campos y ahora también compara las credenciales usando PostgreSQL y `PasswordHelper`.
 
 ### Contraseña original, hash y salt
 
@@ -222,6 +222,119 @@ Los datos se envían mediante parámetros de Npgsql. No se concatenan el nombre,
 
 Ejecuta una consulta con `EXISTS` sobre `usuarios`. Si no hay registros muestra la configuración; si hay al menos uno abre el login.
 
-#### 5. ¿Por qué la autenticación no se realiza todavía?
+#### 5. ¿Qué se agregó después de crear el primer administrador?
 
-Porque esta fase solo prepara la creación segura del primer administrador. La validación del login pertenece a una fase posterior que utilizará `PasswordHelper.VerificarContrasena`.
+Se conectó `FrmLogin` con PostgreSQL, se utilizó `PasswordHelper.VerificarContrasena`, se creó `SesionActual` y se agregó una pantalla principal básica.
+
+## 24. Autenticación y sesión
+
+### Cómo recibe los datos FrmLogin
+
+`FrmLogin` obtiene el nombre de usuario desde `txtUsuario` y elimina solamente los espacios del principio y del final. La contraseña se obtiene desde `txtContrasena` sin aplicar `Trim()`, porque un espacio puede formar parte de la contraseña elegida por el usuario.
+
+Antes de consultar PostgreSQL, `ValidarCampos()` comprueba que ambos campos tengan contenido. La lógica de autenticación solo continúa cuando esta validación devuelve `true`.
+
+### Cómo busca al usuario UsuarioRepositorio
+
+`UsuarioRepositorio.ObtenerPorNombreUsuarioAsync()` abre una conexión, relaciona `usuarios` con `roles` mediante `id_rol` y busca el nombre sin diferenciar mayúsculas de minúsculas. La consulta devuelve los datos del usuario y el nombre de su rol. Si no encuentra el registro, devuelve `null`.
+
+El repositorio no verifica la contraseña ni muestra mensajes. Su responsabilidad es obtener y convertir los datos de PostgreSQL en un objeto `Usuario`.
+
+### Por qué la consulta usa un parámetro
+
+El nombre escrito se envía mediante `@nombreUsuario`. El parámetro mantiene el valor separado del texto SQL, evita concatenaciones y ayuda a prevenir inyección SQL. Npgsql se encarga de enviar el valor correctamente a PostgreSQL.
+
+### Mensaje para usuario o contraseña incorrectos
+
+Un usuario inexistente y una contraseña incorrecta muestran el mismo mensaje: `Usuario o contraseña incorrectos.` Esto evita confirmar a una persona externa si un nombre de usuario específico está registrado.
+
+### Cómo PasswordHelper verifica el hash
+
+Después de obtener el usuario, `PasswordHelper.VerificarContrasena()` convierte desde Base64 el hash y la sal almacenados. Luego calcula un hash nuevo usando la contraseña escrita, la misma sal, PBKDF2 y SHA256. Finalmente compara los dos hashes mediante `FixedTimeEquals`.
+
+La contraseña escrita no se guarda en la sesión ni se envía nuevamente a PostgreSQL.
+
+### Qué contiene SesionActual
+
+`SesionActual` guarda únicamente:
+
+- Identificador del usuario.
+- Nombre de usuario.
+- Nombre completo.
+- Identificador del rol.
+- Nombre del rol.
+- Indicador de que existe una sesión.
+
+Estos datos permiten identificar al usuario autenticado durante el uso de la aplicación.
+
+### Por qué la sesión no guarda datos de contraseña
+
+La sesión no necesita la contraseña, el hash ni la sal después de completar la autenticación. Conservar esos datos aumentaría innecesariamente la cantidad de información sensible disponible en memoria. `SesionActual.Iniciar()` copia solamente los datos de identidad y rol.
+
+### Cómo obtiene FrmPrincipal el nombre y el rol
+
+Cuando se carga, `FrmPrincipal` comprueba `SesionActual.HaySesion`. Si existe sesión, forma el saludo con `SesionActual.NombreCompleto` y muestra el rol usando `SesionActual.NombreRol`. El formulario no contiene nombres o roles predeterminados.
+
+### Diferencia entre cerrar sesión y salir
+
+Cerrar sesión establece `CerrarSesionSolicitada` en `true` y cierra `FrmPrincipal`. Entonces `FrmLogin` limpia `SesionActual`, borra los campos y vuelve a mostrarse para permitir otro acceso.
+
+Salir mantiene `CerrarSesionSolicitada` en `false`. `FrmLogin` limpia la sesión, se cierra y la aplicación termina normalmente. Cerrar `FrmPrincipal` mediante la X produce el mismo resultado que salir.
+
+### Por qué FrmPrincipal no consulta PostgreSQL
+
+Los datos necesarios ya fueron obtenidos durante la autenticación y copiados a `SesionActual`. Volver a consultar la base para mostrar el saludo y el rol sería trabajo repetido. También mezclaría acceso a datos con la responsabilidad visual del formulario.
+
+### Qué hacen async y await en el botón
+
+El evento `btnIniciarSesion_Click` es asíncrono porque abrir la conexión y consultar PostgreSQL puede tomar tiempo. `await` espera el resultado sin bloquear innecesariamente la interfaz. Cuando la consulta termina, el método continúa con la verificación de la contraseña.
+
+### Por qué se desactiva el botón
+
+El botón se desactiva mientras se consulta y se verifica el acceso para evitar varios clics y solicitudes repetidas. El bloque `finally` vuelve a activarlo siempre que `FrmLogin` continúe abierto.
+
+### Flujo completo
+
+1. `FrmLogin` valida que los campos tengan contenido.
+2. `UsuarioRepositorio` busca al usuario y obtiene su rol desde PostgreSQL.
+3. `PasswordHelper` verifica la contraseña contra el hash y la sal.
+4. `SesionActual` conserva los datos no sensibles del usuario autenticado.
+5. `FrmPrincipal` muestra el nombre completo y el rol de la sesión.
+
+El flujo puede resumirse así:
+
+`FrmLogin` → `UsuarioRepositorio` → `PasswordHelper` → `SesionActual` → `FrmPrincipal`
+
+### Cómo explicarlo al profesor
+
+Se puede explicar que cada parte tiene una responsabilidad sencilla. El formulario recibe datos y muestra resultados; el repositorio consulta PostgreSQL; el ayudante de contraseñas realiza la comparación segura; la sesión conserva la identidad durante el uso; y el formulario principal presenta los datos autenticados.
+
+No se creó un servicio adicional porque estas cinco partes ya separan claramente las responsabilidades necesarias para esta etapa.
+
+### Cómo realizar una modificación en vivo
+
+Para cambiar un mensaje se edita el texto asignado a `lblMensaje` dentro de `FrmLogin.cs`. Para agregar o modificar una validación sencilla se trabaja dentro de `ValidarCampos()`. Para cambiar el comportamiento de cierre de sesión se revisa la condición `CerrarSesionSolicitada` después de cerrar `FrmPrincipal`.
+
+Después de cada modificación se debe compilar y probar el caso afectado.
+
+### Cinco preguntas posibles del profesor
+
+#### 1. ¿Por qué el repositorio no comprueba la contraseña?
+
+Porque el repositorio se encarga de obtener datos. La verificación criptográfica pertenece a `PasswordHelper`, lo que mantiene cada responsabilidad separada y fácil de explicar.
+
+#### 2. ¿Qué ocurre si el usuario está inactivo?
+
+El login detiene el acceso antes de verificar la contraseña, muestra que el usuario está inactivo y no inicia una sesión.
+
+#### 3. ¿Cómo llegan el nombre completo y el rol al formulario principal?
+
+PostgreSQL los devuelve al repositorio, el repositorio crea un objeto `Usuario`, el login copia sus datos a `SesionActual` y `FrmPrincipal` los lee desde esa sesión.
+
+#### 4. ¿Por qué cerrar sesión no reinicia la aplicación?
+
+Porque `FrmPrincipal` se abre como diálogo desde la única instancia de `FrmLogin`. Al solicitar cerrar sesión, el formulario principal termina y el login oculto vuelve a mostrarse limpio.
+
+#### 5. ¿Qué evita que se envíen varias consultas al presionar varias veces?
+
+El botón de inicio de sesión se desactiva antes de consultar y se vuelve a activar en `finally` cuando corresponde.
