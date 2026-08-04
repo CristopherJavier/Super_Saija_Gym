@@ -338,3 +338,74 @@ Porque `FrmPrincipal` se abre como diálogo desde la única instancia de `FrmLog
 #### 5. ¿Qué evita que se envíen varias consultas al presionar varias veces?
 
 El botón de inicio de sesión se desactiva antes de consultar y se vuelve a activar en `finally` cuando corresponde.
+
+## 25. Navegación con menú lateral y panel contenedor
+
+### Menú lateral
+
+`FrmPrincipal` mantiene `pnlMenuLateral` en el lado izquierdo. Este panel contiene el nombre del sistema, las opciones disponibles y los datos de la sesión. Como utiliza `DockStyle.Left`, conserva su ancho cuando la ventana cambia de tamaño.
+
+Los botones todavía no abren mantenimientos reales. En esta fase solamente cambian el título y el mensaje temporal de `pnlContenido`.
+
+### Panel contenedor
+
+`pnlContenido` representa el área cambiante de la ventana principal. El menú y el encabezado permanecen visibles mientras este panel muestra la portada, un aviso temporal o, en fases posteriores, un formulario de mantenimiento.
+
+Este enfoque se parece a una página con menú lateral: la ventana principal permanece abierta y solo cambia su zona central.
+
+### Qué hace Dock
+
+La propiedad `Dock` permite que un control ocupe un borde o todo el espacio disponible de su contenedor. En este diseño:
+
+- `pnlMenuLateral` usa `DockStyle.Left`.
+- `pnlEncabezado` usa `DockStyle.Top`.
+- `pnlContenido` usa `DockStyle.Fill`.
+- `pnlSesion` usa `DockStyle.Bottom`.
+- `pnlOpciones` usa `DockStyle.Fill` dentro del menú.
+
+Gracias a estas propiedades no se necesitan cálculos manuales cuando el usuario maximiza, restaura o cambia el tamaño de la ventana.
+
+### Ventana independiente y formulario incrustado
+
+Una ventana independiente aparece separada y tiene su propio borde, título y posición en el escritorio. Un formulario incrustado se coloca dentro de `pnlContenido` y se comporta como parte de `FrmPrincipal`.
+
+Los futuros mantenimientos principales se incrustarán para conservar el menú y el encabezado. Los formularios pequeños para agregar o editar registros podrán ser diálogos independientes cuando esa fase sea autorizada.
+
+### Qué hace TopLevel = false
+
+Un formulario normalmente es una ventana de nivel superior. Al establecer `TopLevel = false`, Windows Forms permite agregarlo como control dentro de otro contenedor, en este caso `pnlContenido`.
+
+### Qué hace FormBorderStyle.None
+
+`FormBorderStyle.None` elimina el borde y la barra de título del formulario incrustado. Así no parece una segunda ventana colocada dentro de la principal.
+
+### Qué hace Dock.Fill
+
+Después de incrustar el formulario, `DockStyle.Fill` hace que ocupe todo el espacio disponible en `pnlContenido` y se adapte cuando cambia el tamaño de `FrmPrincipal`.
+
+### Qué hace AbrirFormularioEnPanel()
+
+`AbrirFormularioEnPanel()` cierra el formulario interno anterior, configura el nuevo para que pueda incrustarse, limpia el panel, agrega el formulario y lo muestra al frente. El método queda preparado, pero todavía no se utiliza porque no existen formularios de mantenimiento autorizados.
+
+Cuando exista un formulario como `FrmClientes`, su botón podrá reemplazar el aviso temporal por una llamada sencilla a este método.
+
+### Contenido temporal
+
+`MostrarInicio()` limpia el área central y presenta la portada. `MostrarModuloPendiente()` recibe el nombre de una opción y muestra que ese mantenimiento se implementará en la siguiente fase. Ninguno de estos métodos consulta PostgreSQL ni realiza operaciones CRUD.
+
+### Esto no es arquitectura por capas
+
+Incrustar formularios es una decisión de navegación y presentación visual. No define por sí mismo una arquitectura por capas ni introduce servicios, interfaces o patrones adicionales.
+
+El proyecto conserva una separación sencilla por carpetas:
+
+- `Formularios` contiene la interfaz y sus eventos.
+- `Datos` contiene las consultas y conexiones.
+- `Modelos` contiene las clases que representan información y sesión.
+- `Seguridad` contiene la creación y verificación de hashes.
+
+### Presentación experimental de la imagen del login
+
+El `PictureBox` original ahora ocupa el espacio disponible debajo del nombre del sistema. Utiliza `Zoom`, fondo negro, ningún borde y ningún margen. De esta forma conserva la proporción de la imagen sin usar `StretchImage`, recortes o código de dibujo.
+
+Este cambio es visual y experimental. No modifica el archivo, el recurso ni la lógica de autenticación.
