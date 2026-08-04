@@ -134,3 +134,94 @@ Después de aprobar el diseño, cada formulario podrá construirse de acuerdo co
 Una tabla de mantenimiento guarda datos relativamente estables que sirven como catálogo o referencia, como clientes, productos, categorías o proveedores.
 
 Una tabla de proceso registra operaciones realizadas en una fecha y con participantes específicos, como una venta, una compra, un cobro o una reserva. Normalmente utiliza datos de varios mantenimientos y puede necesitar encabezados, detalles, totales y estados propios. Las tablas de proceso se definirán en fases posteriores porque no pertenecen al alcance actual.
+
+## 23. Creación segura del primer administrador
+
+### ¿Por qué no se guarda la contraseña original?
+
+La contraseña original es un dato secreto que solo debe conocer la persona que la escribe. Guardarla directamente permitiría que alguien pudiera leerla si obtiene acceso a la base de datos. El programa la utiliza temporalmente para calcular un hash y no la envía al repositorio ni la almacena.
+
+### ¿Qué es un hash?
+
+Un hash es un resultado calculado a partir de la contraseña. Sirve para comprobar posteriormente si una contraseña escrita produce el mismo resultado, pero no está diseñado para recuperar la contraseña original.
+
+### ¿Qué es una sal?
+
+La sal es un conjunto de bytes aleatorios que se genera para cada contraseña. Se combina con la contraseña antes de calcular el hash. Esto hace que dos personas con la misma contraseña obtengan resultados almacenados diferentes.
+
+### ¿Qué hace PBKDF2?
+
+PBKDF2 aplica repetidamente una función criptográfica a la contraseña y la sal. Las iteraciones hacen que comprobar una contraseña válida siga siendo práctico, pero aumentan el trabajo necesario para intentar adivinar muchas contraseñas.
+
+En el proyecto se usa PBKDF2 con SHA256, una sal aleatoria y una cantidad fija de iteraciones. El hash y la sal se convierten a Base64 para poder guardarlos como texto en PostgreSQL.
+
+### ¿Por qué se usa FixedTimeEquals?
+
+`FixedTimeEquals` compara el hash calculado con el hash almacenado procurando que el tiempo de comparación no revele en qué posición apareció una diferencia. Es una comparación apropiada para valores relacionados con seguridad.
+
+### ¿Qué hace PasswordHelper?
+
+`PasswordHelper` concentra las operaciones de seguridad de contraseñas. `CrearHash` genera una sal aleatoria, calcula el hash y devuelve ambos valores en Base64. `VerificarContrasena` vuelve a calcular el hash con la sal guardada y compara los resultados. Esta clase no conoce formularios ni accede a PostgreSQL.
+
+### ¿Qué hace UsuarioRepositorio?
+
+`UsuarioRepositorio` contiene las operaciones de la tabla `usuarios` necesarias para esta fase. Comprueba si ya existen usuarios, verifica si un nombre de usuario está ocupado y crea el primer administrador usando el identificador del rol `ADMIN` almacenado en PostgreSQL.
+
+El repositorio recibe el hash y la sal, no la contraseña original. También devuelve el identificador generado por PostgreSQL cuando el administrador se crea correctamente.
+
+### ¿Qué significa una consulta parametrizada?
+
+Una consulta parametrizada mantiene el texto SQL separado de los valores escritos por el usuario. En lugar de concatenar esos valores dentro de la consulta se utilizan parámetros como `@nombreUsuario`. Esto ayuda a evitar inyección SQL y permite que Npgsql envíe cada valor con su tipo correspondiente.
+
+### ¿Por qué el formulario inicial aparece una sola vez?
+
+Al iniciar, el programa consulta con `EXISTS` si la tabla `usuarios` contiene al menos un registro. Si está vacía, muestra `FrmConfiguracionInicial`. Después de crear el administrador, la tabla deja de estar vacía y las siguientes ejecuciones abren directamente `FrmLogin`.
+
+El formulario inicial no contiene datos predeterminados. El nombre completo, el usuario y la contraseña deben ser escritos manualmente por la persona que realiza la configuración.
+
+### Flujo de Program.cs
+
+1. Inicializa Windows Forms.
+2. Consulta si existen usuarios mediante `UsuarioRepositorio.HayUsuariosAsync()`.
+3. Si existen usuarios, ejecuta `FrmLogin`.
+4. Si no existen usuarios, muestra `FrmConfiguracionInicial` como diálogo.
+5. Si el administrador se crea correctamente, abre `FrmLogin`.
+6. Si se cancela la configuración o falla la conexión inicial, termina la aplicación.
+
+El inicio de sesión todavía no compara credenciales. Conserva la validación de campos de la fase anterior.
+
+### Contraseña original, hash y salt
+
+- Contraseña original: texto secreto escrito por el usuario y utilizado únicamente durante el cálculo.
+- Hash: resultado derivado de la contraseña mediante PBKDF2 y SHA256.
+- Salt o sal: valor aleatorio que se combina con la contraseña para producir un resultado diferente para cada registro.
+
+En PostgreSQL solo se guardan el hash y la sal en Base64. No se guarda la contraseña original.
+
+### Cómo explicarlo al profesor
+
+Se puede explicar que el programa primero comprueba si la instalación ya tiene usuarios. Cuando la tabla está vacía presenta un formulario especial para crear el administrador. El formulario valida los datos, transforma la contraseña con PBKDF2 y entrega al repositorio solamente el hash y la sal. El repositorio busca el rol `ADMIN`, ejecuta una inserción parametrizada y devuelve el identificador creado.
+
+Esta separación permite explicar tres responsabilidades sencillas: el formulario recoge y valida datos, `PasswordHelper` protege la contraseña y `UsuarioRepositorio` se comunica con PostgreSQL.
+
+### Cinco preguntas posibles del profesor
+
+#### 1. ¿Por qué no se puede recuperar la contraseña desde el hash?
+
+Porque el hash se usa para comparar resultados, no para cifrar y descifrar información. Para validar una contraseña se calcula un hash nuevo y se compara con el almacenado.
+
+#### 2. ¿Por qué se necesita una sal si ya existe un hash?
+
+Porque la sal hace que contraseñas iguales produzcan hashes almacenados diferentes y dificulta el uso de resultados calculados previamente.
+
+#### 3. ¿Cómo se evita la inyección SQL al crear el usuario?
+
+Los datos se envían mediante parámetros de Npgsql. No se concatenan el nombre, el usuario, el hash ni la sal dentro del texto SQL.
+
+#### 4. ¿Cómo sabe el programa cuándo debe mostrar la configuración inicial?
+
+Ejecuta una consulta con `EXISTS` sobre `usuarios`. Si no hay registros muestra la configuración; si hay al menos uno abre el login.
+
+#### 5. ¿Por qué la autenticación no se realiza todavía?
+
+Porque esta fase solo prepara la creación segura del primer administrador. La validación del login pertenece a una fase posterior que utilizará `PasswordHelper.VerificarContrasena`.
