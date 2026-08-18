@@ -1,0 +1,197 @@
+namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
+{
+    partial class FrmConsultaTiposMembresias
+    {
+        private System.ComponentModel.IContainer components = null;
+        private TableLayoutPanel tlpPrincipal;
+        private Panel pnlTitulos;
+        private Label lblTitulo;
+        private TableLayoutPanel tlpBusqueda;
+        private TextBox txtBuscar;
+        private Button btnBuscar;
+        private Button btnLimpiar;
+        private DataGridView dgvTiposMembresias;
+        private DataGridViewTextBoxColumn colNombre;
+        private DataGridViewTextBoxColumn colDescripcion;
+        private DataGridViewTextBoxColumn colDuracionDias;
+        private DataGridViewTextBoxColumn colPrecio;
+        private DataGridViewTextBoxColumn colEstadoTexto;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            DataGridViewCellStyle estiloDuracion = new DataGridViewCellStyle();
+            DataGridViewCellStyle estiloPrecio = new DataGridViewCellStyle();
+            DataGridViewCellStyle estiloEstado = new DataGridViewCellStyle();
+            tlpPrincipal = new TableLayoutPanel();
+            pnlTitulos = new Panel();
+            lblTitulo = new Label();
+            tlpBusqueda = new TableLayoutPanel();
+            txtBuscar = new TextBox();
+            btnBuscar = new Button();
+            btnLimpiar = new Button();
+            dgvTiposMembresias = new DataGridView();
+            colNombre = new DataGridViewTextBoxColumn();
+            colDescripcion = new DataGridViewTextBoxColumn();
+            colDuracionDias = new DataGridViewTextBoxColumn();
+            colPrecio = new DataGridViewTextBoxColumn();
+            colEstadoTexto = new DataGridViewTextBoxColumn();
+            tlpPrincipal.SuspendLayout();
+            pnlTitulos.SuspendLayout();
+            tlpBusqueda.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTiposMembresias).BeginInit();
+            SuspendLayout();
+            tlpPrincipal.BackColor = Color.White;
+            tlpPrincipal.ColumnCount = 1;
+            tlpPrincipal.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlpPrincipal.Controls.Add(pnlTitulos, 0, 0);
+            tlpPrincipal.Controls.Add(tlpBusqueda, 0, 2);
+            tlpPrincipal.Controls.Add(dgvTiposMembresias, 0, 4);
+            tlpPrincipal.Dock = DockStyle.Fill;
+            tlpPrincipal.Location = new Point(0, 0);
+            tlpPrincipal.Name = "tlpPrincipal";
+            tlpPrincipal.Padding = new Padding(18, 12, 18, 18);
+            tlpPrincipal.RowCount = 5;
+            tlpPrincipal.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            tlpPrincipal.RowStyles.Add(new RowStyle(SizeType.Absolute, 13F));
+            tlpPrincipal.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+            tlpPrincipal.RowStyles.Add(new RowStyle(SizeType.Absolute, 13F));
+            tlpPrincipal.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tlpPrincipal.Size = new Size(686, 533);
+            pnlTitulos.Controls.Add(lblTitulo);
+            pnlTitulos.Dock = DockStyle.Fill;
+            pnlTitulos.Margin = new Padding(0);
+            pnlTitulos.Name = "pnlTitulos";
+            lblTitulo.AutoSize = true;
+            lblTitulo.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            lblTitulo.ForeColor = Color.Black;
+            lblTitulo.Location = new Point(0, 0);
+            lblTitulo.Name = "lblTitulo";
+            lblTitulo.Text = "Consulta de tipos de membresías";
+            tlpBusqueda.ColumnCount = 3;
+            tlpBusqueda.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlpBusqueda.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 118F));
+            tlpBusqueda.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 118F));
+            tlpBusqueda.Controls.Add(txtBuscar, 0, 0);
+            tlpBusqueda.Controls.Add(btnBuscar, 1, 0);
+            tlpBusqueda.Controls.Add(btnLimpiar, 2, 0);
+            tlpBusqueda.Dock = DockStyle.Fill;
+            tlpBusqueda.Margin = new Padding(0);
+            tlpBusqueda.Name = "tlpBusqueda";
+            tlpBusqueda.RowCount = 1;
+            tlpBusqueda.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            txtBuscar.Dock = DockStyle.Fill;
+            txtBuscar.Font = new Font("Segoe UI", 10F);
+            txtBuscar.Margin = new Padding(0, 8, 9, 8);
+            txtBuscar.MaxLength = 200;
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.KeyDown += txtBuscar_KeyDown;
+            btnBuscar.BackColor = Color.Black;
+            btnBuscar.Cursor = Cursors.Hand;
+            btnBuscar.Dock = DockStyle.Fill;
+            btnBuscar.FlatAppearance.BorderSize = 0;
+            btnBuscar.FlatStyle = FlatStyle.Flat;
+            btnBuscar.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            btnBuscar.ForeColor = Color.White;
+            btnBuscar.Margin = new Padding(0, 4, 4, 4);
+            btnBuscar.Name = "btnBuscar";
+            btnBuscar.Text = "BUSCAR";
+            btnBuscar.UseVisualStyleBackColor = false;
+            btnBuscar.Click += btnBuscar_Click;
+            btnLimpiar.BackColor = Color.White;
+            btnLimpiar.Cursor = Cursors.Hand;
+            btnLimpiar.Dock = DockStyle.Fill;
+            btnLimpiar.FlatAppearance.BorderColor = Color.Black;
+            btnLimpiar.FlatStyle = FlatStyle.Flat;
+            btnLimpiar.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            btnLimpiar.ForeColor = Color.Black;
+            btnLimpiar.Margin = new Padding(4, 4, 0, 4);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Text = "LIMPIAR";
+            btnLimpiar.UseVisualStyleBackColor = false;
+            btnLimpiar.Click += btnLimpiar_Click;
+            dgvTiposMembresias.AllowUserToAddRows = false;
+            dgvTiposMembresias.AllowUserToDeleteRows = false;
+            dgvTiposMembresias.AllowUserToResizeRows = false;
+            dgvTiposMembresias.AutoGenerateColumns = false;
+            dgvTiposMembresias.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvTiposMembresias.BackgroundColor = Color.White;
+            dgvTiposMembresias.BorderStyle = BorderStyle.Fixed3D;
+            dgvTiposMembresias.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            dgvTiposMembresias.ColumnHeadersVisible = true;
+            dgvTiposMembresias.Columns.AddRange(new DataGridViewColumn[] { colNombre, colDescripcion, colDuracionDias, colPrecio, colEstadoTexto });
+            dgvTiposMembresias.Dock = DockStyle.Fill;
+            dgvTiposMembresias.EnableHeadersVisualStyles = true;
+            dgvTiposMembresias.Margin = new Padding(0);
+            dgvTiposMembresias.MultiSelect = false;
+            dgvTiposMembresias.Name = "dgvTiposMembresias";
+            dgvTiposMembresias.ReadOnly = true;
+            dgvTiposMembresias.RowHeadersVisible = false;
+            dgvTiposMembresias.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            colNombre.DataPropertyName = "Nombre";
+            colNombre.FillWeight = 20F;
+            colNombre.HeaderText = "Nombre";
+            colNombre.Name = "colNombre";
+            colNombre.ReadOnly = true;
+            colNombre.SortMode = DataGridViewColumnSortMode.Automatic;
+            colDescripcion.DataPropertyName = "Descripcion";
+            colDescripcion.FillWeight = 40F;
+            colDescripcion.HeaderText = "Descripción";
+            colDescripcion.Name = "colDescripcion";
+            colDescripcion.ReadOnly = true;
+            colDescripcion.SortMode = DataGridViewColumnSortMode.Automatic;
+            colDuracionDias.DataPropertyName = "DuracionDias";
+            colDuracionDias.FillWeight = 15F;
+            colDuracionDias.HeaderText = "Duración (días)";
+            colDuracionDias.Name = "colDuracionDias";
+            colDuracionDias.ReadOnly = true;
+            colDuracionDias.SortMode = DataGridViewColumnSortMode.Automatic;
+            estiloDuracion.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            colDuracionDias.DefaultCellStyle = estiloDuracion;
+            colPrecio.DataPropertyName = "Precio";
+            colPrecio.FillWeight = 15F;
+            colPrecio.HeaderText = "Precio";
+            colPrecio.Name = "colPrecio";
+            colPrecio.ReadOnly = true;
+            colPrecio.SortMode = DataGridViewColumnSortMode.Automatic;
+            estiloPrecio.Alignment = DataGridViewContentAlignment.MiddleRight;
+            estiloPrecio.Format = "N2";
+            colPrecio.DefaultCellStyle = estiloPrecio;
+            colEstadoTexto.DataPropertyName = "EstadoTexto";
+            colEstadoTexto.FillWeight = 10F;
+            colEstadoTexto.HeaderText = "Estado";
+            colEstadoTexto.Name = "colEstadoTexto";
+            colEstadoTexto.ReadOnly = true;
+            colEstadoTexto.SortMode = DataGridViewColumnSortMode.Automatic;
+            estiloEstado.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            colEstadoTexto.DefaultCellStyle = estiloEstado;
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(686, 533);
+            Controls.Add(tlpPrincipal);
+            Font = new Font("Segoe UI", 9F);
+            FormBorderStyle = FormBorderStyle.None;
+            MinimumSize = new Size(686, 533);
+            Name = "FrmConsultaTiposMembresias";
+            Text = "Consulta de tipos de membresías";
+            Load += FrmConsultaTiposMembresias_Load;
+            tlpPrincipal.ResumeLayout(false);
+            pnlTitulos.ResumeLayout(false);
+            pnlTitulos.PerformLayout();
+            tlpBusqueda.ResumeLayout(false);
+            tlpBusqueda.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvTiposMembresias).EndInit();
+            ResumeLayout(false);
+        }
+
+    }
+}

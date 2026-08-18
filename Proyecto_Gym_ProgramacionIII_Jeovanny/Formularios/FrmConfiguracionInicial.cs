@@ -9,6 +9,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmConfiguracionInicial()
         {
             InitializeComponent();
+            txtNombreCompleto.KeyPress += txtNombreCompleto_KeyPress;
         }
 
         private async void btnCrearAdministrador_Click(object sender, EventArgs e)
@@ -95,9 +96,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 return false;
             }
 
-            if (nombreCompleto.Length < 4)
+            if (!EsNombreValido(nombreCompleto))
             {
-                lblMensaje.Text = "El nombre completo debe tener al menos 4 caracteres.";
+                lblMensaje.Text = "El nombre completo solo puede contener letras y espacios.";
                 txtNombreCompleto.Focus();
                 return false;
             }
@@ -109,30 +110,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 return false;
             }
 
-            if (nombreUsuario.Length < 4)
-            {
-                lblMensaje.Text = "El nombre de usuario debe tener al menos 4 caracteres.";
-                txtNombreUsuario.Focus();
-                return false;
-            }
-
-            if (txtNombreUsuario.Text.Contains(' '))
-            {
-                lblMensaje.Text = "El nombre de usuario no puede contener espacios.";
-                txtNombreUsuario.Focus();
-                return false;
-            }
-
             if (string.IsNullOrWhiteSpace(contrasena))
             {
                 lblMensaje.Text = "Debe escribir una contraseña.";
-                txtContrasena.Focus();
-                return false;
-            }
-
-            if (contrasena.Length < 8)
-            {
-                lblMensaje.Text = "La contraseña debe tener al menos 8 caracteres.";
                 txtContrasena.Focus();
                 return false;
             }
@@ -152,6 +132,27 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             }
 
             return true;
+        }
+
+        private static bool EsNombreValido(string texto)
+        {
+            foreach (char caracter in texto)
+            {
+                if (!char.IsLetter(caracter) && caracter != ' ')
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void txtNombreCompleto_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         private void chkMostrarContrasena_CheckedChanged(object sender, EventArgs e)

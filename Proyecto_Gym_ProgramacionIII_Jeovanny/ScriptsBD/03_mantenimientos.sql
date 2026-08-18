@@ -68,19 +68,12 @@ CREATE TABLE IF NOT EXISTS categorias_productos (
     estado BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE IF NOT EXISTS marcas (
-    id_marca INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR(80) NOT NULL UNIQUE,
-    estado BOOLEAN NOT NULL DEFAULT TRUE
-);
-
 CREATE TABLE IF NOT EXISTS productos (
     id_producto INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     codigo VARCHAR(30) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(250),
     id_categoria INTEGER NOT NULL,
-    id_marca INTEGER,
     precio_compra NUMERIC(12,2) NOT NULL,
     precio_venta NUMERIC(12,2) NOT NULL,
     stock INTEGER NOT NULL DEFAULT 0,
@@ -88,7 +81,6 @@ CREATE TABLE IF NOT EXISTS productos (
     imagen TEXT,
     estado BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY (id_categoria) REFERENCES categorias_productos (id_categoria),
-    FOREIGN KEY (id_marca) REFERENCES marcas (id_marca),
     CHECK (precio_compra >= 0),
     CHECK (precio_venta >= 0),
     CHECK (stock >= 0),
@@ -105,28 +97,14 @@ CREATE TABLE IF NOT EXISTS proveedores (
     estado BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE IF NOT EXISTS productos_proveedores (
-    id_producto INTEGER NOT NULL,
-    id_proveedor INTEGER NOT NULL,
-    costo_referencia NUMERIC(12,2),
-    estado BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (id_producto, id_proveedor),
-    FOREIGN KEY (id_producto) REFERENCES productos (id_producto) ON DELETE CASCADE,
-    FOREIGN KEY (id_proveedor) REFERENCES proveedores (id_proveedor) ON DELETE CASCADE,
-    CHECK (costo_referencia IS NULL OR costo_referencia >= 0)
-);
-
-CREATE INDEX idx_clientes_nombre_apellido
+CREATE INDEX IF NOT EXISTS idx_clientes_nombre_apellido
 ON clientes (nombre, apellido);
 
-CREATE INDEX idx_entrenadores_nombre_apellido
+CREATE INDEX IF NOT EXISTS idx_entrenadores_nombre_apellido
 ON entrenadores (nombre, apellido);
 
-CREATE INDEX idx_productos_nombre
+CREATE INDEX IF NOT EXISTS idx_productos_nombre
 ON productos (nombre);
 
-CREATE INDEX idx_horarios_clases_clase_dia
+CREATE INDEX IF NOT EXISTS idx_horarios_clases_clase_dia
 ON horarios_clases (id_clase, dia_semana);
-
-CREATE INDEX idx_productos_proveedores_proveedor
-ON productos_proveedores (id_proveedor);

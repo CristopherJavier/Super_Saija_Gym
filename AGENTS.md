@@ -25,6 +25,19 @@
 - No tocar manualmente las carpetas `.vs`, `bin` u `obj`.
 - No modificar el archivo `.csproj.user`.
 
+## Interfaz y validaciones
+
+- Cuando existan dos o más botones relacionados y haya espacio horizontal suficiente, preferir distribuirlos horizontalmente en lugar de uno debajo del otro.
+- Los botones que formen una pareja visual deben mantener el mismo tamaño.
+- Evitar scrolls innecesarios y distribuciones que desperdicien espacio.
+- Los controles de entrada deben respetar los límites definidos por PostgreSQL.
+- Los campos de nombres y apellidos deben impedir números cuando corresponda.
+- Los campos numéricos identificables como cédula o teléfono deben impedir letras.
+- No agregar textos de ejemplo, ayudas o placeholders que el usuario no haya solicitado.
+- No agregar campos, controles, opciones, estados, validaciones o reglas de negocio que no estén solicitados por los requisitos o por el usuario.
+- Las decisiones puramente visuales pueden resolverse buscando la mejor presentación, siempre sin cambiar reglas del negocio.
+- Cuando falte una regla funcional necesaria para continuar, detenerse y pedir autorización antes de inventarla.
+
 ## Base de datos y seguridad
 
 - No utilizar Entity Framework.

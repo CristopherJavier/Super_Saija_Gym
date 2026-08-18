@@ -69,12 +69,12 @@ El método `ValidarCampos()` trabaja de la siguiente manera:
 1. Obtiene el usuario con `txtUsuario.Text.Trim()`.
 2. Obtiene la contraseña con `txtContrasena.Text`.
 3. Limpia cualquier mensaje mostrado anteriormente.
-4. Prepara el color rojo suave que se utilizará para los errores.
+4. Limpia el estilo anterior del mensaje.
 5. Comprueba si el usuario está vacío. Si está vacío, muestra un mensaje, coloca el cursor en `txtUsuario` y devuelve `false`.
 6. Comprueba si la contraseña está vacía. Si está vacía, muestra un mensaje, coloca el cursor en `txtContrasena` y devuelve `false`.
 7. Si ambos campos tienen contenido, devuelve `true`.
 
-Cuando el método devuelve `true`, el evento del botón muestra un mensaje con el color de acento azul grisáceo para indicar que los datos están completos.
+Cuando el método devuelve `true`, el evento del botón consulta el usuario en PostgreSQL, comprueba su estado y verifica la contraseña protegida.
 
 ## 13. ¿Por qué se usa Trim() solamente en el usuario?
 
@@ -92,7 +92,7 @@ No se utiliza en la contraseña porque los espacios pueden formar parte intencio
 
 ## 16. Estado actual de la autenticación
 
-`FrmLogin` comprueba los campos, busca el usuario mediante una consulta parametrizada y verifica la contraseña con `PasswordHelper`. Cuando el acceso es correcto crea la sesión y abre `FrmPrincipal`. Los permisos de ventanas y los mantenimientos todavía pertenecen a fases posteriores.
+`FrmLogin` comprueba los campos, busca el usuario mediante una consulta parametrizada y verifica la contraseña con `PasswordHelper`. Cuando el acceso es correcto crea la sesión y abre `FrmPrincipal`. La sesión conserva el identificador, el nombre y el rol del usuario.
 
 ## 17. ¿Qué es un mantenimiento?
 
@@ -107,15 +107,11 @@ CRUD reúne las cuatro operaciones básicas de un mantenimiento:
 - `Update`: actualizar un registro existente.
 - `Delete`: eliminar un registro o, cuando convenga conservarlo, desactivarlo mediante su estado.
 
-En esta fase se prepara la base de datos que permitirá implementar esas operaciones, pero todavía no se crean los formularios.
+En esta entrega los ocho mantenimientos implementan crear, consultar, actualizar y cambiar el estado. El cambio de estado sustituye la eliminación física para conservar los registros.
 
-## 19. Relaciones 1:1, 1:N y N:M
+## 19. Relaciones de la primera entrega
 
-Una relación 1:1 significa que un registro puede estar relacionado con uno solo de la otra tabla. El ejemplo es `usuarios` con `usuarios_perfiles`, porque cada usuario puede tener un único perfil.
-
-Una relación 1:N significa que un registro principal puede relacionarse con muchos registros. Por ejemplo, una categoría puede tener muchos productos, pero cada producto pertenece a una categoría.
-
-Una relación N:M significa que varios registros de una tabla pueden relacionarse con varios de otra. Productos y proveedores tienen esta relación: un producto puede tener varios proveedores y un proveedor puede ofrecer varios productos. La tabla intermedia `productos_proveedores` guarda las combinaciones.
+Una relación 1:N significa que un registro principal puede relacionarse con muchos registros. Por ejemplo, una categoría puede tener muchos productos, pero cada producto pertenece a una categoría. También un rol puede pertenecer a muchos usuarios y una clase puede tener varios horarios.
 
 ## 20. Claves primarias y foráneas
 
@@ -127,7 +123,7 @@ La clave foránea guarda la referencia hacia otra tabla y asegura que el registr
 
 La base define qué datos se guardarán, cuáles son obligatorios, qué valores son válidos y cómo se relacionan las tablas. Revisar primero esta estructura evita crear controles para datos incorrectos o tener que rehacer formularios cuando aparezcan relaciones que no se habían considerado.
 
-Después de aprobar el diseño, cada formulario podrá construirse de acuerdo con campos y reglas ya definidos.
+Los formularios de esta entrega se construyeron de acuerdo con esos campos y reglas.
 
 ## 22. Tabla de mantenimiento y tabla de proceso
 
@@ -224,7 +220,7 @@ Ejecuta una consulta con `EXISTS` sobre `usuarios`. Si no hay registros muestra 
 
 #### 5. ¿Qué se agregó después de crear el primer administrador?
 
-Se conectó `FrmLogin` con PostgreSQL, se utilizó `PasswordHelper.VerificarContrasena`, se creó `SesionActual` y se agregó una pantalla principal básica.
+Se conectó `FrmLogin` con PostgreSQL, se utilizó `PasswordHelper.VerificarContrasena`, se creó `SesionActual` y se agregó la pantalla principal con los ocho mantenimientos.
 
 ## 24. Autenticación y sesión
 
@@ -345,11 +341,11 @@ El botón de inicio de sesión se desactiva antes de consultar y se vuelve a act
 
 `FrmPrincipal` mantiene `pnlMenuLateral` en el lado izquierdo. Este panel contiene el nombre del sistema, las opciones disponibles y los datos de la sesión. Como utiliza `DockStyle.Left`, conserva su ancho cuando la ventana cambia de tamaño.
 
-Los botones todavía no abren mantenimientos reales. En esta fase solamente cambian el título y el mensaje temporal de `pnlContenido`.
+Cada botón del menú abre su mantenimiento dentro de `pnlContenido`: Clientes, Entrenadores, Tipos de membresías, Clases y actividades, Horarios, Categorías, Productos y Proveedores.
 
 ### Panel contenedor
 
-`pnlContenido` representa el área cambiante de la ventana principal. El menú y el encabezado permanecen visibles mientras este panel muestra la portada, un aviso temporal o, en fases posteriores, un formulario de mantenimiento.
+`pnlContenido` representa el área cambiante de la ventana principal. El menú y el encabezado permanecen visibles mientras este panel muestra la portada o el formulario de mantenimiento seleccionado.
 
 Este enfoque se parece a una página con menú lateral: la ventana principal permanece abierta y solo cambia su zona central.
 
@@ -369,7 +365,7 @@ Gracias a estas propiedades no se necesitan cálculos manuales cuando el usuario
 
 Una ventana independiente aparece separada y tiene su propio borde, título y posición en el escritorio. Un formulario incrustado se coloca dentro de `pnlContenido` y se comporta como parte de `FrmPrincipal`.
 
-Los futuros mantenimientos principales se incrustarán para conservar el menú y el encabezado. Los formularios pequeños para agregar o editar registros podrán ser diálogos independientes cuando esa fase sea autorizada.
+Los mantenimientos principales se incrustan para conservar el menú y el encabezado. Los formularios pequeños para agregar o editar registros se muestran como diálogos independientes.
 
 ### Qué hace TopLevel = false
 
@@ -385,13 +381,11 @@ Después de incrustar el formulario, `DockStyle.Fill` hace que ocupe todo el esp
 
 ### Qué hace AbrirFormularioEnPanel()
 
-`AbrirFormularioEnPanel()` cierra el formulario interno anterior, configura el nuevo para que pueda incrustarse, limpia el panel, agrega el formulario y lo muestra al frente. El método queda preparado, pero todavía no se utiliza porque no existen formularios de mantenimiento autorizados.
+`AbrirFormularioEnPanel()` cierra el formulario interno anterior, configura el nuevo para que pueda incrustarse, limpia el panel, agrega el formulario y lo muestra al frente. Los ocho botones de mantenimiento utilizan este método.
 
-Cuando exista un formulario como `FrmClientes`, su botón podrá reemplazar el aviso temporal por una llamada sencilla a este método.
+### Contenido de inicio
 
-### Contenido temporal
-
-`MostrarInicio()` limpia el área central y presenta la portada. `MostrarModuloPendiente()` recibe el nombre de una opción y muestra que ese mantenimiento se implementará en la siguiente fase. Ninguno de estos métodos consulta PostgreSQL ni realiza operaciones CRUD.
+`MostrarInicio()` limpia el área central y presenta la portada. Esta acción no consulta PostgreSQL ni modifica registros.
 
 ### Esto no es arquitectura por capas
 
@@ -409,3 +403,174 @@ El proyecto conserva una separación sencilla por carpetas:
 El `PictureBox` original ahora ocupa el espacio disponible debajo del nombre del sistema. Utiliza `Zoom`, fondo negro, ningún borde y ningún margen. De esta forma conserva la proporción de la imagen sin usar `StretchImage`, recortes o código de dibujo.
 
 Este cambio es visual y experimental. No modifica el archivo, el recurso ni la lógica de autenticación.
+
+## 26. Mantenimiento de Clientes
+
+### Qué es CRUD
+
+CRUD resume las cuatro operaciones comunes de un mantenimiento: crear, consultar, actualizar y eliminar. En Clientes se puede crear, listar, buscar y actualizar. La eliminación física se sustituye por un cambio de estado.
+
+### Por qué se usa estado en lugar de DELETE
+
+En lugar de borrar el cliente, se cambia su estado para conservar su información. Un cliente inactivo sigue disponible para consultas, historial y una posible reactivación. Por esta razón el repositorio no utiliza `DELETE FROM clientes`.
+
+### Qué hace Cliente
+
+`Cliente` es una clase sencilla que representa una fila de la tabla `clientes`. Sus propiedades guardan temporalmente el identificador, datos personales, fecha de nacimiento, ruta de foto, fecha de registro y estado.
+
+### Qué hace ClienteRepositorio
+
+`ClienteRepositorio` contiene solamente las consultas de clientes. Sus métodos permiten listar, buscar, comprobar una cédula, guardar, actualizar y cambiar el estado. Utiliza `ConexionBD.CrearConexion()`, Npgsql, `async/await`, bloques `using` y parámetros.
+
+### Qué hace FrmClientes
+
+`FrmClientes` es la pantalla principal del mantenimiento. Carga la lista, permite buscar, abre el detalle para crear o editar y solicita confirmación antes de activar o desactivar. El `DataGridView` conserva objetos `Cliente`, por lo que no se necesita una consulta adicional para obtener la fila seleccionada.
+
+La propiedad `Estado` sigue siendo booleana para guardar `true` o `false`. La propiedad calculada `EstadoTexto` muestra `Activo` o `Inactivo` en una columna de texto. De esta manera el `DataGridView` no intenta colocar texto dentro de una columna automática de casilla. Los ocho mantenimientos utilizan la misma solución.
+
+### Qué hace FrmClienteDetalle
+
+`FrmClienteDetalle` recibe y valida los datos de un cliente. El constructor sin parámetros prepara un registro nuevo y el constructor que recibe un `Cliente` carga una edición. El objeto original no se modifica directamente; primero se copian sus valores a los controles y al guardar se construye otro objeto.
+
+### Por qué Nuevo y Editar usan una ventana emergente
+
+Nuevo y Editar trabajan con los mismos campos y validaciones, por eso comparten un solo formulario emergente. `ShowDialog(this)` obliga a terminar o cancelar la edición antes de volver a la lista y evita duplicar dos formularios casi iguales.
+
+### Cómo FrmClientes se incrusta dentro de FrmPrincipal
+
+El evento `btnClientes_Click` selecciona visualmente el botón, cambia el título de la sección y envía una nueva instancia de `FrmClientes` a `AbrirFormularioEnPanel()`.
+
+### Cómo funciona AbrirFormularioEnPanel()
+
+El método cierra el formulario interno anterior, establece `TopLevel = false`, elimina el borde, aplica `DockStyle.Fill`, limpia `pnlContenido`, agrega el nuevo formulario y lo muestra. Así el menú y el encabezado principal permanecen visibles.
+
+### Cómo se busca un cliente
+
+El usuario escribe un texto y presiona BUSCAR o la tecla Enter. `FrmClientes` elimina espacios externos y llama a `BuscarAsync()`. La consulta compara el mismo parámetro con nombre, apellido, cédula, teléfono y correo mediante `ILIKE`, por lo que no distingue mayúsculas y minúsculas.
+
+### Por qué las consultas usan parámetros
+
+Los parámetros mantienen separado el SQL de los valores escritos por el usuario. Esto evita concatenar texto dentro de la consulta, reduce el riesgo de inyección SQL y permite que Npgsql envíe cada dato con el tipo apropiado.
+
+### Cómo se evita repetir una cédula
+
+Antes de guardar, `ExisteCedulaAsync()` busca la cédula. Al editar recibe el identificador actual y excluye esa fila, de modo que conservar la misma cédula no se considera un duplicado. La restricción `UNIQUE` de PostgreSQL permanece como una segunda protección.
+
+### Máscaras de cédula y teléfono
+
+La cédula dominicana necesita exactamente 11 dígitos. `MaskedTextBox` permite escribir solamente esos números y agrega visualmente los guiones con el formato `000-0000000-0`. El teléfono necesita 10 dígitos y el mismo tipo de control muestra automáticamente paréntesis, espacio y guion con el formato `(000) 000-0000`.
+
+Los signos de formato pertenecen solamente a la interfaz. Antes de comprobar duplicados o construir el objeto `Cliente`, el formulario recorre el texto y conserva únicamente los dígitos. PostgreSQL recibe una cédula de 11 números y un teléfono de 10 números. Cuando se edita o se muestra la tabla, la interfaz vuelve a aplicar el formato sin cambiar los valores del objeto.
+
+### Límites de los campos de texto
+
+Nombre y Apellido tienen `MaxLength = 60` porque PostgreSQL utiliza `VARCHAR(60)`. Sus eventos `KeyPress` permiten letras, espacios y teclas de control, por lo que aceptan nombres y apellidos compuestos sin aceptar números. Correo respeta `VARCHAR(120)` y Dirección respeta `VARCHAR(200)`. La dirección no se restringe como un nombre porque puede contener números y caracteres normales de una ubicación.
+
+### Cómo se valida la fecha de nacimiento
+
+El `DateTimePicker` muestra una casilla porque `fecha_nacimiento` es opcional. Cuando la casilla está marcada se guarda la fecha elegida; cuando está desmarcada el formulario envía `null`. La propiedad utiliza `DateTime?` para representar correctamente ambas posibilidades.
+
+### Cómo se maneja la fotografía en esta primera entrega
+
+El usuario selecciona un archivo JPG, JPEG, PNG o BMP y el formulario muestra una vista previa con `Zoom`. Este modo conserva las proporciones originales sin deformar, estirar ni recortar. Como el fondo y el espacio libre del `PictureBox` son negros, las franjas producidas por una proporción diferente se integran con el panel lateral. Los botones SELECCIONAR FOTO y QUITAR FOTO están distribuidos horizontalmente, con el mismo tamaño y un espacio uniforme.
+
+En PostgreSQL se guarda únicamente la ruta en el campo `foto`. No se copia el archivo ni se convierte a Base64. Si la ruta deja de existir, la vista previa queda vacía sin impedir la edición. QUITAR FOTO limpia tanto la ruta como la imagen mostrada.
+
+### Flujo completo para crear un cliente
+
+1. El usuario presiona NUEVO CLIENTE.
+2. `FrmClienteDetalle` aparece centrado como diálogo.
+3. `ValidarCampos()` revisa los datos locales.
+4. El repositorio comprueba que la cédula no exista.
+5. El formulario construye un objeto `Cliente`.
+6. `GuardarAsync()` ejecuta el `INSERT` y devuelve `id_cliente` con `RETURNING`.
+7. El diálogo devuelve `OK` y `FrmClientes` recarga la tabla.
+
+### Flujo completo para editar un cliente
+
+1. El usuario selecciona una fila y presiona EDITAR.
+2. El detalle copia los datos del cliente a sus controles.
+3. El usuario modifica y valida los campos.
+4. La comprobación de cédula ignora el identificador del mismo cliente.
+5. `ActualizarAsync()` cambia los datos editables sin tocar `id_cliente` ni `fecha_registro`.
+6. El diálogo devuelve `OK` y la tabla se recarga.
+
+### Flujo completo para activar o desactivar
+
+1. El usuario selecciona una fila.
+2. El botón muestra DESACTIVAR si está activa o ACTIVAR si está inactiva.
+3. El formulario pregunta confirmación.
+4. `CambiarEstadoAsync()` modifica solamente `estado`.
+5. La lista se recarga y muestra el nuevo estado como texto.
+
+### Cómo modificar una validación durante la defensa
+
+Las validaciones están juntas en `ValidarCampos()` dentro de `FrmClienteDetalle.cs`. Por ejemplo, para cambiar el mínimo del teléfono se modifica la comparación con `Length`, se compila y se prueban un valor inválido y uno válido. Las consultas SQL no necesitan cambiar para ajustar esa regla visual.
+
+### Siete preguntas posibles del profesor
+
+#### 1. ¿Por qué Cliente no tiene métodos?
+
+Porque su única responsabilidad es transportar los datos de una fila de clientes entre el formulario y el repositorio.
+
+#### 2. ¿Por qué no se elimina físicamente un cliente?
+
+Porque cambiar `estado` conserva la información y permite reactivarla. También evita perder datos que podrían necesitarse en procesos futuros.
+
+#### 3. ¿Cómo se evita una inyección SQL en la búsqueda?
+
+El texto se envía en un parámetro llamado `@texto`. Nunca se concatena directamente dentro del SQL.
+
+#### 4. ¿Por qué se usa un solo formulario para Nuevo y Editar?
+
+Porque ambos procesos utilizan los mismos campos. Un cliente opcional indica si el formulario debe insertar o actualizar.
+
+#### 5. ¿Cómo se evita guardar la fecha actual sin intención?
+
+El selector muestra una casilla. Si no está marcada, el formulario envía `null` y PostgreSQL guarda la fecha como opcional; si está marcada, envía la fecha elegida.
+
+#### 6. ¿Qué ocurre si el archivo de la foto fue movido?
+
+La ruta permanece como texto, pero la vista previa se deja vacía y el formulario sigue funcionando. El usuario puede seleccionar otra foto o quitar la ruta.
+
+#### 7. ¿Cómo sabe el botón si debe decir ACTIVAR o DESACTIVAR?
+
+El formulario obtiene el objeto `Cliente` de la fila seleccionada y revisa su propiedad `Estado`. No realiza otra consulta a PostgreSQL.
+
+## 27. Mantenimiento de Entrenadores
+
+`Entrenador` representa los datos personales, la especialidad, la fecha de contratación y el estado. `EntrenadorRepositorio` lista, busca, inserta, actualiza y cambia el estado mediante parámetros. `FrmEntrenadores` muestra la lista y `FrmEntrenadorDetalle` valida y guarda los datos.
+
+## 28. Mantenimiento de Tipos de membresías
+
+Cada tipo contiene nombre, descripción, duración en días, precio y estado. Los controles numéricos evitan letras y respetan la duración positiva y el precio no negativo definidos en PostgreSQL.
+
+## 29. Mantenimiento de Clases y actividades
+
+Cada clase o actividad contiene nombre, descripción, cupo máximo y estado. El nombre se comprueba antes de guardar y el cupo se captura como número mayor que cero.
+
+## 30. Mantenimiento de Horarios de clases
+
+Un horario relaciona una clase con un entrenador mediante sus identificadores. También guarda el día, la hora inicial, la hora final y el estado. La consulta utiliza `JOIN` para mostrar los nombres y el formulario comprueba que la hora final sea posterior a la inicial.
+
+## 31. Mantenimiento de Categorías de productos
+
+Las categorías organizan los productos sin repetir el nombre de la categoría en cada fila. El mantenimiento permite buscar, crear, editar y cambiar el estado.
+
+## 32. Mantenimiento de Productos
+
+El producto guarda código, nombre, descripción, categoría, precios, existencias, imagen y estado. La categoría es una clave foránea obligatoria y permite organizar los productos utilizando el mantenimiento de categorías.
+
+## 33. Mantenimiento de Proveedores
+
+El proveedor contiene nombre, RNC o cédula, teléfono, correo, dirección y estado. El RNC o cédula solamente admite números y se comprueba que no esté repetido.
+
+## 34. Estructura común de los mantenimientos
+
+Cada mantenimiento conserva tres responsabilidades sencillas:
+
+- El modelo representa una fila.
+- El repositorio contiene SQL parametrizado.
+- El formulario muestra, valida y entrega los datos al repositorio.
+
+La eliminación se representa mediante `estado`, por lo que un registro puede desactivarse y reactivarse sin perder información.

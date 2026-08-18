@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\Recursos\gym_goku.png" Link="Recursos\gym_goku.png" />
+    <Content Include="..\Recursos\inicio_goku.png" Link="Recursos\inicio_goku.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
