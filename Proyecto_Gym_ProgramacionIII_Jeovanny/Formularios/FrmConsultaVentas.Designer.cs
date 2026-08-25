@@ -96,6 +96,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             txtBuscar.Font = new Font("Segoe UI", 10F);
             txtBuscar.Location = new Point(0, 8);
             txtBuscar.Margin = new Padding(0, 8, 9, 8);
+            txtBuscar.MaxLength = 150;
             txtBuscar.Name = "txtBuscar";
             txtBuscar.Size = new Size(405, 25);
             txtBuscar.KeyDown += txtBuscar_KeyDown;

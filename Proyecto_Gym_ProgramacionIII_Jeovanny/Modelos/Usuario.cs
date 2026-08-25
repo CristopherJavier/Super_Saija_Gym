@@ -9,7 +9,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos
         public string ContrasenaSalt { get; set; } = string.Empty;
         public int IdRol { get; set; }
         public string NombreRol { get; set; } = string.Empty;
+        public bool RolActivo { get; set; }
         public bool Activo { get; set; }
+        public string EstadoTexto => Activo ? "Activo" : "Inactivo";
         public DateTime FechaCreacion { get; set; }
     }
 }

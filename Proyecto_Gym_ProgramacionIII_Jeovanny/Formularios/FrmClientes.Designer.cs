@@ -140,6 +140,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             txtBuscar.Font = new Font("Segoe UI", 10F);
             txtBuscar.Location = new Point(0, 6);
             txtBuscar.Margin = new Padding(0, 6, 8, 6);
+            txtBuscar.MaxLength = 150;
             txtBuscar.Name = "txtBuscar";
             txtBuscar.Size = new Size(450, 25);
             txtBuscar.TabIndex = 0;

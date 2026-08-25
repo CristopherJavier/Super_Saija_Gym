@@ -116,7 +116,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             pnlOpciones.Size = new Size(263, 491);
             pnlOpciones.TabIndex = 1;
             pnlOpciones.WrapContents = false;
-            pnlOpciones.SizeChanged += pnlOpciones_SizeChanged;
             btnInicio.BackColor = Color.Black;
             btnInicio.Cursor = Cursors.Hand;
             btnInicio.FlatAppearance.BorderSize = 0;

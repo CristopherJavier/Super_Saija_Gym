@@ -17,7 +17,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         private void InitializeComponent()
         {
             lblTitulo = new Label();
-            lblInstruccion = new Label();
             lblNombreCompleto = new Label();
             txtNombreCompleto = new TextBox();
             lblNombreUsuario = new Label();
@@ -36,23 +35,12 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             // 
             lblTitulo.Font = new Font("Segoe UI", 26F, FontStyle.Bold);
             lblTitulo.ForeColor = Color.Black;
-            lblTitulo.Location = new Point(53, 47);
+            lblTitulo.Location = new Point(47, 47);
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(500, 52);
             lblTitulo.TabIndex = 7;
             lblTitulo.Text = "Configuración inicial";
             lblTitulo.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // lblInstruccion
-            // 
-            lblInstruccion.AutoSize = true;
-            lblInstruccion.Font = new Font("Segoe UI", 11F);
-            lblInstruccion.ForeColor = Color.FromArgb(124, 142, 163);
-            lblInstruccion.Location = new Point(53, 79);
-            lblInstruccion.Name = "lblInstruccion";
-            lblInstruccion.Size = new Size(279, 20);
-            lblInstruccion.TabIndex = 8;
-            lblInstruccion.Text = "Crea el primer administrador del sistema";
             // 
             // lblNombreCompleto
             // 
@@ -216,7 +204,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             Controls.Add(lblNombreUsuario);
             Controls.Add(txtNombreCompleto);
             Controls.Add(lblNombreCompleto);
-            Controls.Add(lblInstruccion);
             Controls.Add(lblTitulo);
             Font = new Font("Segoe UI", 9F);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -230,7 +217,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         }
 
         private Label lblTitulo;
-        private Label lblInstruccion;
         private Label lblNombreCompleto;
         private TextBox txtNombreCompleto;
         private Label lblNombreUsuario;

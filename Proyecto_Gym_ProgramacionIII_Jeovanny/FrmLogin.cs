@@ -72,6 +72,14 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny
                     return;
                 }
 
+                if (!usuario.RolActivo)
+                {
+                    lblMensaje.Text = "El rol asignado a este usuario se encuentra inactivo.";
+                    txtContrasena.Clear();
+                    txtUsuario.Focus();
+                    return;
+                }
+
                 bool contrasenaCorrecta = PasswordHelper.VerificarContrasena(
                     contrasenaEscrita,
                     usuario.ContrasenaHash,
@@ -85,7 +93,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny
                     return;
                 }
 
-                SesionActual.Iniciar(usuario);
+                List<string> permisos = await UsuarioRepositorio.ListarClavesPermisosAsync(usuario.IdUsuario);
+                SesionActual.Iniciar(usuario, permisos);
                 Hide();
 
                 using FrmPrincipal frmPrincipal = new FrmPrincipal();

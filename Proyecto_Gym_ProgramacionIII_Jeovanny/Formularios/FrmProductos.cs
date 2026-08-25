@@ -43,6 +43,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             dgvProductos.Columns[nameof(Producto.EstadoTexto)]!.HeaderText = "Estado";
             dgvProductos.Columns[nameof(Producto.Descripcion)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.IdCategoria)]!.Visible = false;
+            dgvProductos.Columns[nameof(Producto.IdMarca)]!.Visible = false;
+            dgvProductos.Columns[nameof(Producto.NombreMarca)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.PrecioCompra)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.StockMinimo)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.Imagen)]!.Visible = false;

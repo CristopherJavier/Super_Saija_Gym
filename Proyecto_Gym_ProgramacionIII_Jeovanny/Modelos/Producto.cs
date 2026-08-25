@@ -8,6 +8,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos
         public string Descripcion { get; set; } = string.Empty;
         public int IdCategoria { get; set; }
         public string NombreCategoria { get; set; } = string.Empty;
+        public int? IdMarca { get; set; }
+        public string NombreMarca { get; set; } = string.Empty;
         public decimal PrecioCompra { get; set; }
         public decimal PrecioVenta { get; set; }
         public int Stock { get; set; }

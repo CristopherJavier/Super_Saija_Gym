@@ -1,4 +1,5 @@
 using Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos;
+using Proyecto_Gym_ProgramacionIII_Jeovanny.Seguridad;
 
 namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
 {
@@ -11,6 +12,21 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmPrincipal()
         {
             InitializeComponent();
+            ConfigurarDesplazamientoMenu();
+            InicializarMenusMovimientosReportes();
+            InicializarMenuConfiguracion();
+            pnlOpciones.SizeChanged += pnlOpciones_SizeChanged;
+            AjustarAnchoMenu();
+        }
+
+        private void ConfigurarDesplazamientoMenu()
+        {
+            pnlOpciones.Dock = DockStyle.None;
+            pnlOpciones.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            pnlOpciones.Width = pnlMenuLateral.ClientSize.Width
+                + SystemInformation.VerticalScrollBarWidth;
+            pnlOpciones.HorizontalScroll.Enabled = false;
+            pnlOpciones.HorizontalScroll.Visible = false;
         }
 
         private void FrmPrincipal_Load(object sender, EventArgs e)
@@ -28,6 +44,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
 
             lblBienvenida.Text = SesionActual.NombreCompleto;
             lblRol.Text = $"Rol: {SesionActual.NombreRol}";
+            AplicarPermisos();
             SeleccionarBoton(btnInicio);
             AjustarAnchoMenu();
             MostrarInicio();
@@ -99,6 +116,24 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 btnCategoriasProductos,
                 btnProductos,
                 btnProveedores,
+                btnAsignarMembresia,
+                btnRenovarMembresia,
+                btnMovimientoCobros,
+                btnGenerarCargos,
+                btnMovimientoVentas,
+                btnMovimientoCompras,
+                btnReservarClases,
+                btnCuentasCobrar,
+                btnAbonos,
+                btnInventario,
+                btnAsistencias,
+                btnReporteBalanceClientes,
+                btnReporteClientes,
+                btnReporteMembresias,
+                btnReporteCobros,
+                btnReporteVentas,
+                btnReporteCompras,
+                btnReporteCargos,
                 btnConsultaEntrenadores,
                 btnConsultaTiposMembresias,
                 btnConsultaClases,
@@ -108,7 +143,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 btnConsultaVentas,
                 btnConsultaCompras,
                 btnConsultaProveedores,
-                btnConsultaCobros
+                btnConsultaCobros,
+                btnCambiarContrasena
             };
 
             foreach (Button boton in botonesMenu)
@@ -137,33 +173,53 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             AjustarAnchoMenu();
         }
 
+        private void btnMovimientos_Click(object? sender, EventArgs e)
+        {
+            pnlSubmenuMovimientos.Visible = !pnlSubmenuMovimientos.Visible;
+            btnMovimientos.Text = pnlSubmenuMovimientos.Visible
+                ? "v  MOVIMIENTOS"
+                : ">  MOVIMIENTOS";
+            AjustarAnchoMenu();
+        }
+
+        private void btnReportes_Click(object? sender, EventArgs e)
+        {
+            pnlSubmenuReportes.Visible = !pnlSubmenuReportes.Visible;
+            btnReportes.Text = pnlSubmenuReportes.Visible
+                ? "v  REPORTES"
+                : ">  REPORTES";
+            AjustarAnchoMenu();
+        }
+
+        private void btnConfiguracion_Click(object sender, EventArgs e)
+        {
+            pnlSubmenuConfiguracion.Visible = !pnlSubmenuConfiguracion.Visible;
+            btnConfiguracion.Text = pnlSubmenuConfiguracion.Visible
+                ? "v  CONFIGURACIÓN"
+                : ">  CONFIGURACIÓN";
+            AjustarAnchoMenu();
+        }
+
         private void AjustarAnchoMenu()
         {
-            int altoContenido = btnInicio.Height + btnMantenimientos.Height + btnConsultas.Height;
-
-            if (pnlSubmenuMantenimientos.Visible)
+            if (btnConfiguracion is null || pnlSubmenuConfiguracion is null)
             {
-                altoContenido += pnlSubmenuMantenimientos.Height;
+                return;
             }
 
-            if (pnlSubmenuConsultas.Visible)
-            {
-                altoContenido += pnlSubmenuConsultas.Height;
-            }
-
-            int ancho = pnlOpciones.ClientSize.Width;
-            if (altoContenido > pnlOpciones.ClientSize.Height)
-            {
-                ancho -= SystemInformation.VerticalScrollBarWidth + 4;
-            }
-
-            ancho = Math.Max(0, ancho);
+            int ancho = pnlMenuLateral.ClientSize.Width;
 
             btnInicio.Width = ancho;
             btnMantenimientos.Width = ancho;
             pnlSubmenuMantenimientos.Width = ancho;
+            btnMovimientos.Width = ancho;
+            pnlSubmenuMovimientos.Width = ancho;
+            btnReportes.Width = ancho;
+            pnlSubmenuReportes.Width = ancho;
             btnConsultas.Width = ancho;
             pnlSubmenuConsultas.Width = ancho;
+            btnConfiguracion.Width = ancho;
+            pnlSubmenuConfiguracion.Width = ancho;
 
             foreach (Control control in pnlSubmenuMantenimientos.Controls)
             {
@@ -171,6 +227,21 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             }
 
             foreach (Control control in pnlSubmenuConsultas.Controls)
+            {
+                control.Width = ancho;
+            }
+
+            foreach (Control control in pnlSubmenuMovimientos.Controls)
+            {
+                control.Width = ancho;
+            }
+
+            foreach (Control control in pnlSubmenuReportes.Controls)
+            {
+                control.Width = ancho;
+            }
+
+            foreach (Control control in pnlSubmenuConfiguracion.Controls)
             {
                 control.Width = ancho;
             }
@@ -237,6 +308,114 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             AbrirFormularioEnPanel(new FrmProveedores());
         }
 
+        private void btnAsignarMembresia_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnAsignarMembresia);
+            AbrirFormularioEnPanel(new FrmAsignarMembresia());
+        }
+
+        private void btnRenovarMembresia_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnRenovarMembresia);
+            AbrirFormularioEnPanel(new FrmRenovarMembresia());
+        }
+
+        private void btnMovimientoCobros_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnMovimientoCobros);
+            AbrirFormularioEnPanel(new FrmCobros());
+        }
+
+        private void btnGenerarCargos_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnGenerarCargos);
+            AbrirFormularioEnPanel(new FrmGenerarCargo());
+        }
+
+        private void btnMovimientoVentas_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnMovimientoVentas);
+            AbrirFormularioEnPanel(new FrmVentas());
+        }
+
+        private void btnMovimientoCompras_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnMovimientoCompras);
+            AbrirFormularioEnPanel(new FrmCompras());
+        }
+
+        private void btnReservarClases_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReservarClases);
+            AbrirFormularioEnPanel(new FrmReservasClases());
+        }
+
+        private void btnCuentasCobrar_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnCuentasCobrar);
+            AbrirFormularioEnPanel(new FrmCuentasCobrar());
+        }
+
+        private void btnAbonos_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnAbonos);
+            AbrirFormularioEnPanel(new FrmAbonos());
+        }
+
+        private void btnInventario_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnInventario);
+            AbrirFormularioEnPanel(new FrmMovimientosInventario());
+        }
+
+        private void btnAsistencias_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnAsistencias);
+            AbrirFormularioEnPanel(new FrmAsistencias());
+        }
+
+        private void btnReporteBalanceClientes_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteBalanceClientes);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.BalanceClientes));
+        }
+
+        private void btnReporteClientes_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteClientes);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Clientes));
+        }
+
+        private void btnReporteMembresias_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteMembresias);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Membresias));
+        }
+
+        private void btnReporteCobros_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteCobros);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Cobros));
+        }
+
+        private void btnReporteVentas_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteVentas);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Ventas));
+        }
+
+        private void btnReporteCompras_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteCompras);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Compras));
+        }
+
+        private void btnReporteCargos_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReporteCargos);
+            AbrirFormularioEnPanel(new FrmReporte(TipoReporte.Cargos));
+        }
+
         private void btnConsultaEntrenadores_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnConsultaEntrenadores);
@@ -295,6 +474,209 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         {
             SeleccionarBoton(btnConsultaCobros);
             AbrirFormularioEnPanel(new FrmConsultaCobros());
+        }
+
+        private void btnCambiarContrasena_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnCambiarContrasena);
+            using FrmCambiarContrasena formulario = new FrmCambiarContrasena();
+            formulario.ShowDialog(this);
+        }
+
+        private void AplicarPermisos()
+        {
+            bool puedeClientes = SesionActual.TienePermiso(ClavesPermisos.MantenimientoClientes);
+            bool puedeEntrenadores = SesionActual.TienePermiso(ClavesPermisos.MantenimientoEntrenadores);
+            bool puedeTiposMembresias = SesionActual.TienePermiso(ClavesPermisos.MantenimientoTiposMembresias);
+            bool puedeClases = SesionActual.TienePermiso(ClavesPermisos.MantenimientoClases);
+            bool puedeHorarios = SesionActual.TienePermiso(ClavesPermisos.MantenimientoHorarios);
+            bool puedeCategorias = SesionActual.TienePermiso(ClavesPermisos.MantenimientoCategorias);
+            bool puedeProductos = SesionActual.TienePermiso(ClavesPermisos.MantenimientoProductos);
+            bool puedeProveedores = SesionActual.TienePermiso(ClavesPermisos.MantenimientoProveedores);
+
+            btnClientes.Visible = puedeClientes;
+            btnEntrenadores.Visible = puedeEntrenadores;
+            btnTiposMembresias.Visible = puedeTiposMembresias;
+            btnClasesActividades.Visible = puedeClases;
+            btnHorariosClases.Visible = puedeHorarios;
+            btnCategoriasProductos.Visible = puedeCategorias;
+            btnProductos.Visible = puedeProductos;
+            btnProveedores.Visible = puedeProveedores;
+            pnlSubmenuMantenimientos.Height = 40 * new[]
+            {
+                puedeClientes,
+                puedeEntrenadores,
+                puedeTiposMembresias,
+                puedeClases,
+                puedeHorarios,
+                puedeCategorias,
+                puedeProductos,
+                puedeProveedores
+            }.Count(permitido => permitido);
+            btnMantenimientos.Visible = puedeClientes
+                || puedeEntrenadores
+                || puedeTiposMembresias
+                || puedeClases
+                || puedeHorarios
+                || puedeCategorias
+                || puedeProductos
+                || puedeProveedores;
+
+            bool puedeAsignarMembresia = SesionActual.TienePermiso(ClavesPermisos.MovimientoAsignarMembresia);
+            bool puedeRenovarMembresia = SesionActual.TienePermiso(ClavesPermisos.MovimientoRenovarMembresia);
+            bool puedeCobros = SesionActual.TienePermiso(ClavesPermisos.MovimientoCobros);
+            bool puedeGenerarCargos = SesionActual.TienePermiso(ClavesPermisos.MovimientoGenerarCargos);
+            bool puedeVentas = SesionActual.TienePermiso(ClavesPermisos.MovimientoVentas);
+            bool puedeCompras = SesionActual.TienePermiso(ClavesPermisos.MovimientoCompras);
+            bool puedeReservas = SesionActual.TienePermiso(ClavesPermisos.MovimientoReservas);
+            bool puedeCuentasCobrar = SesionActual.TienePermiso(ClavesPermisos.MovimientoCuentasCobrar);
+            bool puedeAbonos = SesionActual.TienePermiso(ClavesPermisos.MovimientoAbonos);
+            bool puedeInventario = SesionActual.TienePermiso(ClavesPermisos.MovimientoInventario);
+            bool puedeAsistencias = SesionActual.TienePermiso(ClavesPermisos.MovimientoAsistencias);
+
+            btnAsignarMembresia.Visible = puedeAsignarMembresia;
+            btnRenovarMembresia.Visible = puedeRenovarMembresia;
+            btnMovimientoCobros.Visible = puedeCobros;
+            btnGenerarCargos.Visible = puedeGenerarCargos;
+            btnMovimientoVentas.Visible = puedeVentas;
+            btnMovimientoCompras.Visible = puedeCompras;
+            btnReservarClases.Visible = puedeReservas;
+            btnCuentasCobrar.Visible = puedeCuentasCobrar;
+            btnAbonos.Visible = puedeAbonos;
+            btnInventario.Visible = puedeInventario;
+            btnAsistencias.Visible = puedeAsistencias;
+            pnlSubmenuMovimientos.Height = 40 * new[]
+            {
+                puedeAsignarMembresia,
+                puedeRenovarMembresia,
+                puedeCobros,
+                puedeGenerarCargos,
+                puedeVentas,
+                puedeCompras,
+                puedeReservas,
+                puedeCuentasCobrar,
+                puedeAbonos,
+                puedeInventario,
+                puedeAsistencias
+            }.Count(permitido => permitido);
+            btnMovimientos.Visible = puedeAsignarMembresia
+                || puedeRenovarMembresia
+                || puedeCobros
+                || puedeGenerarCargos
+                || puedeVentas
+                || puedeCompras
+                || puedeReservas
+                || puedeCuentasCobrar
+                || puedeAbonos
+                || puedeInventario
+                || puedeAsistencias;
+
+            bool puedeReporteBalance = SesionActual.TienePermiso(ClavesPermisos.ReporteBalanceClientes);
+            bool puedeReporteClientes = SesionActual.TienePermiso(ClavesPermisos.ReporteClientes);
+            bool puedeReporteMembresias = SesionActual.TienePermiso(ClavesPermisos.ReporteMembresias);
+            bool puedeReporteCobros = SesionActual.TienePermiso(ClavesPermisos.ReporteCobros);
+            bool puedeReporteVentas = SesionActual.TienePermiso(ClavesPermisos.ReporteVentas);
+            bool puedeReporteCompras = SesionActual.TienePermiso(ClavesPermisos.ReporteCompras);
+            bool puedeReporteCargos = SesionActual.TienePermiso(ClavesPermisos.ReporteCargos);
+
+            btnReporteBalanceClientes.Visible = puedeReporteBalance;
+            btnReporteClientes.Visible = puedeReporteClientes;
+            btnReporteMembresias.Visible = puedeReporteMembresias;
+            btnReporteCobros.Visible = puedeReporteCobros;
+            btnReporteVentas.Visible = puedeReporteVentas;
+            btnReporteCompras.Visible = puedeReporteCompras;
+            btnReporteCargos.Visible = puedeReporteCargos;
+            pnlSubmenuReportes.Height = 40 * new[]
+            {
+                puedeReporteBalance,
+                puedeReporteClientes,
+                puedeReporteMembresias,
+                puedeReporteCobros,
+                puedeReporteVentas,
+                puedeReporteCompras,
+                puedeReporteCargos
+            }.Count(permitido => permitido);
+            btnReportes.Visible = puedeReporteBalance
+                || puedeReporteClientes
+                || puedeReporteMembresias
+                || puedeReporteCobros
+                || puedeReporteVentas
+                || puedeReporteCompras
+                || puedeReporteCargos;
+
+            bool puedeConsultaEntrenadores = SesionActual.TienePermiso(ClavesPermisos.ConsultaEntrenadores);
+            bool puedeConsultaMembresias = SesionActual.TienePermiso(ClavesPermisos.ConsultaMembresias);
+            bool puedeConsultaClases = SesionActual.TienePermiso(ClavesPermisos.ConsultaClases);
+            bool puedeConsultaReservas = SesionActual.TienePermiso(ClavesPermisos.ConsultaReservas);
+            bool puedeConsultaCargos = SesionActual.TienePermiso(ClavesPermisos.ConsultaCargos);
+            bool puedeConsultaProductos = SesionActual.TienePermiso(ClavesPermisos.ConsultaProductos);
+            bool puedeConsultaVentas = SesionActual.TienePermiso(ClavesPermisos.ConsultaVentas);
+            bool puedeConsultaCompras = SesionActual.TienePermiso(ClavesPermisos.ConsultaCompras);
+            bool puedeConsultaProveedores = SesionActual.TienePermiso(ClavesPermisos.ConsultaProveedores);
+            bool puedeConsultaCobros = SesionActual.TienePermiso(ClavesPermisos.ConsultaCobros);
+
+            btnConsultaEntrenadores.Visible = puedeConsultaEntrenadores;
+            btnConsultaTiposMembresias.Visible = puedeConsultaMembresias;
+            btnConsultaClases.Visible = puedeConsultaClases;
+            btnConsultaReservas.Visible = puedeConsultaReservas;
+            btnConsultaCargos.Visible = puedeConsultaCargos;
+            btnConsultaProductos.Visible = puedeConsultaProductos;
+            btnConsultaVentas.Visible = puedeConsultaVentas;
+            btnConsultaCompras.Visible = puedeConsultaCompras;
+            btnConsultaProveedores.Visible = puedeConsultaProveedores;
+            btnConsultaCobros.Visible = puedeConsultaCobros;
+            pnlSubmenuConsultas.Height = 40 * new[]
+            {
+                puedeConsultaEntrenadores,
+                puedeConsultaMembresias,
+                puedeConsultaClases,
+                puedeConsultaReservas,
+                puedeConsultaCargos,
+                puedeConsultaProductos,
+                puedeConsultaVentas,
+                puedeConsultaCompras,
+                puedeConsultaProveedores,
+                puedeConsultaCobros
+            }.Count(permitido => permitido);
+            btnConsultas.Visible = puedeConsultaEntrenadores
+                || puedeConsultaMembresias
+                || puedeConsultaClases
+                || puedeConsultaReservas
+                || puedeConsultaCargos
+                || puedeConsultaProductos
+                || puedeConsultaVentas
+                || puedeConsultaCompras
+                || puedeConsultaProveedores
+                || puedeConsultaCobros;
+
+            btnCambiarContrasena.Visible = true;
+            pnlSubmenuConfiguracion.Height = 40;
+            btnConfiguracion.Visible = true;
+
+            if (!btnMantenimientos.Visible)
+            {
+                pnlSubmenuMantenimientos.Visible = false;
+            }
+
+            if (!btnConsultas.Visible)
+            {
+                pnlSubmenuConsultas.Visible = false;
+            }
+
+            if (!btnMovimientos.Visible)
+            {
+                pnlSubmenuMovimientos.Visible = false;
+            }
+
+            if (!btnReportes.Visible)
+            {
+                pnlSubmenuReportes.Visible = false;
+            }
+
+            if (!btnConfiguracion.Visible)
+            {
+                pnlSubmenuConfiguracion.Visible = false;
+            }
         }
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)

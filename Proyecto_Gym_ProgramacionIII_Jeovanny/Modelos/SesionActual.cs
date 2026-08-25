@@ -8,15 +8,27 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos
         public static int IdRol { get; private set; }
         public static string NombreRol { get; private set; } = string.Empty;
         public static bool HaySesion { get; private set; }
+        private static List<string> Permisos { get; set; } = new List<string>();
 
-        public static void Iniciar(Usuario usuario)
+        public static void Iniciar(Usuario usuario, List<string> permisos)
         {
             IdUsuario = usuario.IdUsuario;
             NombreUsuario = usuario.NombreUsuario;
             NombreCompleto = usuario.NombreCompleto;
             IdRol = usuario.IdRol;
             NombreRol = usuario.NombreRol;
+            Permisos = permisos;
             HaySesion = true;
+        }
+
+        public static bool TienePermiso(string clave)
+        {
+            if (NombreRol.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return Permisos.Any(x => x.Equals(clave, StringComparison.OrdinalIgnoreCase));
         }
 
         public static void Cerrar()
@@ -26,6 +38,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Modelos
             NombreCompleto = string.Empty;
             IdRol = 0;
             NombreRol = string.Empty;
+            Permisos = new List<string>();
             HaySesion = false;
         }
     }
