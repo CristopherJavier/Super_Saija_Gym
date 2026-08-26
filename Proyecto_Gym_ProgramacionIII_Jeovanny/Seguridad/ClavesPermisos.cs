@@ -38,5 +38,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Seguridad
         public const string ReporteVentas = "REP_VENTAS";
         public const string ReporteCompras = "REP_COMPRAS";
         public const string ReporteCargos = "REP_CARGOS";
+        public const string ConfiguracionMetodosPago = "CONFIG_METODOS_PAGO";
+        public const string ConfiguracionUsuarios = "CONFIG_USUARIOS";
+        public const string ConfiguracionRoles = "CONFIG_ROLES";
+        public const string ConfiguracionPermisos = "CONFIG_PERMISOS";
+        public const string ConfiguracionRolesPermisos = "CONFIG_ROLES_PERMISOS";
     }
 }

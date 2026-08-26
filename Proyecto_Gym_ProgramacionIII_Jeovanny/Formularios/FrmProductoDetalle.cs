@@ -12,7 +12,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmProductoDetalle()
         {
             InitializeComponent();
-            txtNombre.KeyPress += txtNombre_KeyPress;
         }
 
         public FrmProductoDetalle(Producto producto)
@@ -23,15 +22,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             lblTitulo.Text = Text;
             rutaImagen = producto.Imagen;
             MostrarVistaPreviaImagen();
-            txtNombre.KeyPress += txtNombre_KeyPress;
-        }
-
-        private void txtNombre_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
         }
 
         private async void FrmProductoDetalle_Load(object? sender, EventArgs e)
@@ -48,11 +38,18 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 }
                 cmbCategoria.DataSource = categorias;
 
+                List<Marca> marcas = await MarcaRepositorio.ListarAsync();
+                marcas = marcas.Where(x => x.Estado || x.IdMarca == productoEditar?.IdMarca).ToList();
+                List<Marca> marcasConOpcion = new List<Marca> { new Marca { IdMarca = 0, Nombre = "(Sin marca)" } };
+                marcasConOpcion.AddRange(marcas);
+                cmbMarca.DataSource = marcasConOpcion;
+
                 if (productoEditar is null) return;
                 txtCodigo.Text = productoEditar.Codigo;
                 txtNombre.Text = productoEditar.Nombre;
                 txtDescripcion.Text = productoEditar.Descripcion;
                 cmbCategoria.SelectedItem = categorias.FirstOrDefault(x => x.IdCategoria == productoEditar.IdCategoria);
+                cmbMarca.SelectedItem = marcasConOpcion.FirstOrDefault(x => x.IdMarca == (productoEditar.IdMarca ?? 0));
                 nudPrecioCompra.Value = productoEditar.PrecioCompra;
                 nudPrecioVenta.Value = productoEditar.PrecioVenta;
                 nudStock.Value = productoEditar.Stock;
@@ -61,7 +58,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             }
             catch (NpgsqlException)
             {
-                lblMensaje.Text = "No fue posible cargar las categorías.";
+                lblMensaje.Text = "No fue posible cargar las categorías y marcas.";
                 btnGuardar.Enabled = false;
             }
         }
@@ -117,6 +114,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                     Nombre = txtNombre.Text.Trim(),
                     Descripcion = txtDescripcion.Text.Trim(),
                     IdCategoria = categoria.IdCategoria,
+                    IdMarca = cmbMarca.SelectedItem is Marca marcaSeleccionada && marcaSeleccionada.IdMarca > 0
+                        ? marcaSeleccionada.IdMarca
+                        : null,
                     PrecioCompra = nudPrecioCompra.Value,
                     PrecioVenta = nudPrecioVenta.Value,
                     Stock = Decimal.ToInt32(nudStock.Value),

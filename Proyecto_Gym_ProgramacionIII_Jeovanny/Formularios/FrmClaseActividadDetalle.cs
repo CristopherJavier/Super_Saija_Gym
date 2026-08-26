@@ -11,7 +11,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmClaseActividadDetalle()
         {
             InitializeComponent();
-            txtNombre.KeyPress += txtNombre_KeyPress;
         }
 
         public FrmClaseActividadDetalle(ClaseActividad clase)
@@ -20,19 +19,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             InitializeComponent();
             Text = "Editar clase o actividad";
             lblTitulo.Text = Text;
-            txtNombre.KeyPress += txtNombre_KeyPress;
             txtNombre.Text = clase.Nombre;
             txtDescripcion.Text = clase.Descripcion;
             nudCupoMaximo.Value = clase.CupoMaximo;
             chkEstado.Checked = clase.Estado;
-        }
-
-        private void txtNombre_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
         }
 
         private async void btnGuardar_Click(object? sender, EventArgs e)

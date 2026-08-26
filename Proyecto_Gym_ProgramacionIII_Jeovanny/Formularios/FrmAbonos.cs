@@ -92,10 +92,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             {
                 MostrarExcepcion(ex);
             }
-            finally
-            {
-                btnRegistrar.Enabled = true;
-            }
         }
 
         private async void btnActualizar_Click(object? sender, EventArgs e)

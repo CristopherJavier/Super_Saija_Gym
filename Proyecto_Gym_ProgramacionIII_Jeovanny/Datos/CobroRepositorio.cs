@@ -185,7 +185,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             }
         }
 
-        public static async Task<List<Cobro>> ListarAsync(DateTime? desde = null, DateTime? hasta = null)
+        public static async Task<List<Cobro>> ListarAsync(
+            DateTime? desde = null,
+            DateTime? hasta = null,
+            string texto = "")
         {
             const string consulta = @"
                 SELECT co.id_cobro,
@@ -196,6 +199,11 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                        u.nombre_completo AS nombre_usuario,
                        co.id_metodo_pago,
                        mp.nombre AS nombre_metodo_pago,
+                       COALESCE((
+                           SELECT STRING_AGG(cd.descripcion, ', ' ORDER BY cd.id_detalle_cobro)
+                           FROM cobros_detalle cd
+                           WHERE cd.id_cobro = co.id_cobro
+                       ), '') AS concepto,
                        co.total,
                        co.estado
                 FROM cobros co
@@ -204,6 +212,20 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 INNER JOIN metodos_pago mp ON mp.id_metodo_pago = co.id_metodo_pago
                 WHERE (@desde IS NULL OR co.fecha >= @desde)
                   AND (@hasta IS NULL OR co.fecha < @hasta)
+                  AND (
+                      @texto = ''
+                      OR c.nombre ILIKE @busqueda
+                      OR c.apellido ILIKE @busqueda
+                      OR u.nombre_completo ILIKE @busqueda
+                      OR mp.nombre ILIKE @busqueda
+                      OR CAST(co.id_cobro AS TEXT) ILIKE @busqueda
+                      OR EXISTS (
+                          SELECT 1
+                          FROM cobros_detalle cd
+                          WHERE cd.id_cobro = co.id_cobro
+                            AND cd.descripcion ILIKE @busqueda
+                      )
+                  )
                 ORDER BY co.fecha DESC;";
 
             List<Cobro> cobros = new List<Cobro>();
@@ -216,6 +238,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             comando.Parameters.Add("hasta", NpgsqlDbType.Timestamp).Value = hasta.HasValue
                 ? hasta.Value
                 : DBNull.Value;
+            comando.Parameters.AddWithValue("texto", texto.Trim());
+            comando.Parameters.AddWithValue("busqueda", $"%{texto.Trim()}%");
             using NpgsqlDataReader lector = await comando.ExecuteReaderAsync();
 
             while (await lector.ReadAsync())
@@ -230,6 +254,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                     NombreUsuario = lector.GetString(lector.GetOrdinal("nombre_usuario")),
                     IdMetodoPago = lector.GetInt32(lector.GetOrdinal("id_metodo_pago")),
                     NombreMetodoPago = lector.GetString(lector.GetOrdinal("nombre_metodo_pago")),
+                    Concepto = lector.GetString(lector.GetOrdinal("concepto")),
                     Total = lector.GetDecimal(lector.GetOrdinal("total")),
                     Estado = lector.GetBoolean(lector.GetOrdinal("estado"))
                 });

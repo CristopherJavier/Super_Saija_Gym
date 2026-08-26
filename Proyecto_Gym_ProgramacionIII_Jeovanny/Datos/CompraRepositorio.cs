@@ -158,7 +158,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             }
         }
 
-        public static async Task<List<Compra>> ListarAsync(DateTime? desde = null, DateTime? hasta = null)
+        public static async Task<List<Compra>> ListarAsync(
+            DateTime? desde = null,
+            DateTime? hasta = null,
+            string texto = "")
         {
             const string consulta = @"
                 SELECT co.id_compra,
@@ -179,6 +182,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 INNER JOIN metodos_pago mp ON mp.id_metodo_pago = co.id_metodo_pago
                 WHERE (@desde IS NULL OR co.fecha >= @desde)
                   AND (@hasta IS NULL OR co.fecha < @hasta)
+                  AND (
+                      @texto = ''
+                      OR p.nombre ILIKE @busqueda
+                      OR u.nombre_completo ILIKE @busqueda
+                      OR mp.nombre ILIKE @busqueda
+                      OR CAST(co.id_compra AS TEXT) ILIKE @busqueda
+                  )
                 ORDER BY co.fecha DESC;";
 
             List<Compra> compras = new List<Compra>();
@@ -191,6 +201,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             comando.Parameters.Add("hasta", NpgsqlDbType.Timestamp).Value = hasta.HasValue
                 ? hasta.Value
                 : DBNull.Value;
+            comando.Parameters.AddWithValue("texto", texto.Trim());
+            comando.Parameters.AddWithValue("busqueda", $"%{texto.Trim()}%");
             using NpgsqlDataReader lector = await comando.ExecuteReaderAsync();
 
             while (await lector.ReadAsync())

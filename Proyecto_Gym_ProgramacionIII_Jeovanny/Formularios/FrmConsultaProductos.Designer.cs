@@ -14,6 +14,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         private DataGridViewTextBoxColumn colCodigo;
         private DataGridViewTextBoxColumn colNombre;
         private DataGridViewTextBoxColumn colCategoria;
+        private DataGridViewTextBoxColumn colMarca;
         private DataGridViewTextBoxColumn colPrecioVenta;
         private DataGridViewTextBoxColumn colStock;
         private DataGridViewTextBoxColumn colEstadoTexto;
@@ -41,6 +42,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             colCodigo = new DataGridViewTextBoxColumn();
             colNombre = new DataGridViewTextBoxColumn();
             colCategoria = new DataGridViewTextBoxColumn();
+            colMarca = new DataGridViewTextBoxColumn();
             colPrecioVenta = new DataGridViewTextBoxColumn();
             colStock = new DataGridViewTextBoxColumn();
             colEstadoTexto = new DataGridViewTextBoxColumn();
@@ -136,7 +138,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             dgvProductos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvProductos.BackgroundColor = Color.White;
             dgvProductos.BorderStyle = BorderStyle.Fixed3D;
-            dgvProductos.Columns.AddRange(new DataGridViewColumn[] { colCodigo, colNombre, colCategoria, colPrecioVenta, colStock, colEstadoTexto });
+            dgvProductos.Columns.AddRange(new DataGridViewColumn[] { colCodigo, colNombre, colCategoria, colMarca, colPrecioVenta, colStock, colEstadoTexto });
             dgvProductos.Dock = DockStyle.Fill;
             dgvProductos.Location = new Point(18, 139);
             dgvProductos.Margin = new Padding(0);
@@ -164,6 +166,12 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             colCategoria.Name = "colNombreCategoria";
             colCategoria.ReadOnly = true;
             colCategoria.SortMode = DataGridViewColumnSortMode.Automatic;
+            colMarca.DataPropertyName = "NombreMarca";
+            colMarca.FillWeight = 14F;
+            colMarca.HeaderText = "Marca";
+            colMarca.Name = "colNombreMarca";
+            colMarca.ReadOnly = true;
+            colMarca.SortMode = DataGridViewColumnSortMode.Automatic;
             colPrecioVenta.DataPropertyName = "PrecioVenta";
             colPrecioVenta.FillWeight = 14F;
             colPrecioVenta.HeaderText = "Precio de venta";

@@ -223,6 +223,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 DialogResult = DialogResult.OK;
                 cerrarFormulario = true;
             }
+            catch (PostgresException excepcion) when (excepcion.SqlState == PostgresErrorCodes.UniqueViolation)
+            {
+                lblMensaje.Text = "Ya existe un cliente con esa cédula o correo registrado.";
+            }
             catch (NpgsqlException)
             {
                 lblMensaje.Text = "No fue posible realizar la operación en la base de datos.";

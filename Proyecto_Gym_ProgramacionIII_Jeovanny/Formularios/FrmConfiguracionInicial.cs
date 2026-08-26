@@ -117,6 +117,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 return false;
             }
 
+            if (contrasena.Length < 4)
+            {
+                lblMensaje.Text = "La contraseña debe tener al menos 4 caracteres.";
+                txtContrasena.Focus();
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(confirmarContrasena))
             {
                 lblMensaje.Text = "Debe confirmar la contraseña.";

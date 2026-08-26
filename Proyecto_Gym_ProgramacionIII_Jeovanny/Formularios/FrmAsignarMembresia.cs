@@ -40,15 +40,18 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             try
             {
                 LimpiarMensaje();
+                List<MembresiaCliente> membresias = await MembresiaClienteRepositorio.ListarAsync();
                 List<Cliente> clientes = (await ClienteRepositorio.ListarAsync())
-                    .Where(x => x.Estado)
+                    .Where(cliente => cliente.Estado
+                        && !membresias.Any(membresia => membresia.IdCliente == cliente.IdCliente
+                            && membresia.Estado))
                     .ToList();
                 List<TipoMembresia> tipos = (await TipoMembresiaRepositorio.ListarAsync())
                     .Where(x => x.Estado)
                     .ToList();
                 cmbClientes.DataSource = clientes;
                 cmbTiposMembresias.DataSource = tipos;
-                dgvDatos.DataSource = await MembresiaClienteRepositorio.ListarAsync();
+                dgvDatos.DataSource = membresias;
                 ConfigurarTabla();
                 btnGuardar.Enabled = clientes.Count > 0 && tipos.Count > 0;
                 ActualizarResumen();
@@ -95,10 +98,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             catch (Exception ex)
             {
                 MostrarExcepcion(ex);
-            }
-            finally
-            {
-                btnGuardar.Enabled = true;
             }
         }
 

@@ -50,7 +50,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             AgregarBoton("AGREGAR", btnAgregar_Click);
             AgregarBoton("QUITAR", btnQuitar_Click, false);
             btnRegistrar = AgregarBoton("REGISTRAR", btnRegistrar_Click);
-            btnImprimir = AgregarBoton("IMPRIMIR RECIBO", btnImprimir_Click, false, 165);
+            btnImprimir = AgregarBoton("IMPRIMIR", btnImprimir_Click, false);
             btnImprimir.Enabled = false;
             Load += FrmCobros_Load;
             ActualizarCarrito();

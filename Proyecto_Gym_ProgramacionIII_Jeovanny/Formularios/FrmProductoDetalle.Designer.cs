@@ -9,6 +9,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         private Label lblNombre;
         private Label lblDescripcion;
         private Label lblCategoria;
+        private Label lblMarca;
         private Label lblPrecioCompra;
         private Label lblPrecioVenta;
         private Label lblStock;
@@ -18,6 +19,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         private TextBox txtNombre;
         private TextBox txtDescripcion;
         private ComboBox cmbCategoria;
+        private ComboBox cmbMarca;
         private NumericUpDown nudPrecioCompra;
         private NumericUpDown nudPrecioVenta;
         private NumericUpDown nudStock;
@@ -47,6 +49,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             lblNombre = new Label();
             lblDescripcion = new Label();
             lblCategoria = new Label();
+            lblMarca = new Label();
             lblPrecioCompra = new Label();
             lblPrecioVenta = new Label();
             lblStock = new Label();
@@ -56,6 +59,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             txtNombre = new TextBox();
             txtDescripcion = new TextBox();
             cmbCategoria = new ComboBox();
+            cmbMarca = new ComboBox();
             nudPrecioCompra = new NumericUpDown();
             nudPrecioVenta = new NumericUpDown();
             nudStock = new NumericUpDown();
@@ -104,6 +108,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             lblCategoria.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblCategoria.Location = new Point(370, 265);
             lblCategoria.Text = "Categoría";
+            lblMarca.AutoSize = true;
+            lblMarca.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lblMarca.Location = new Point(645, 265);
+            lblMarca.Text = "Marca";
             lblPrecioCompra.AutoSize = true;
             lblPrecioCompra.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblPrecioCompra.Location = new Point(370, 325);
@@ -146,8 +154,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             cmbCategoria.Font = new Font("Segoe UI", 10F);
             cmbCategoria.Location = new Point(370, 287);
             cmbCategoria.Name = "cmbCategoria";
-            cmbCategoria.Size = new Size(525, 25);
+            cmbCategoria.Size = new Size(250, 25);
             cmbCategoria.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMarca.Font = new Font("Segoe UI", 10F);
+            cmbMarca.Location = new Point(645, 287);
+            cmbMarca.Name = "cmbMarca";
+            cmbMarca.Size = new Size(250, 25);
+            cmbMarca.DropDownStyle = ComboBoxStyle.DropDownList;
             nudPrecioCompra.Font = new Font("Segoe UI", 10F);
             nudPrecioCompra.Location = new Point(370, 347);
             nudPrecioCompra.Name = "nudPrecioCompra";
@@ -184,7 +197,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnSeleccionarImagen.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
             btnSeleccionarImagen.ForeColor = Color.White;
             btnSeleccionarImagen.Location = new Point(35, 420);
-            btnSeleccionarImagen.Size = new Size(120, 44);
+            btnSeleccionarImagen.Size = new Size(135, 44);
             btnSeleccionarImagen.Text = "SELECCIONAR IMAGEN";
             btnSeleccionarImagen.UseVisualStyleBackColor = false;
             btnSeleccionarImagen.Cursor = Cursors.Hand;
@@ -195,9 +208,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnQuitarImagen.FlatStyle = FlatStyle.Flat;
             btnQuitarImagen.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
             btnQuitarImagen.ForeColor = Color.Black;
-            btnQuitarImagen.Location = new Point(165, 420);
-            btnQuitarImagen.Size = new Size(120, 44);
-            btnQuitarImagen.Text = "QUITAR IMAGEN";
+            btnQuitarImagen.Location = new Point(180, 420);
+            btnQuitarImagen.Size = new Size(105, 44);
+            btnQuitarImagen.Text = "QUITAR";
             btnQuitarImagen.UseVisualStyleBackColor = false;
             btnQuitarImagen.Cursor = Cursors.Hand;
             btnQuitarImagen.Name = "btnQuitarImagen";
@@ -250,6 +263,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             Controls.Add(lblNombre);
             Controls.Add(lblDescripcion);
             Controls.Add(lblCategoria);
+            Controls.Add(lblMarca);
             Controls.Add(lblPrecioCompra);
             Controls.Add(lblPrecioVenta);
             Controls.Add(lblStock);
@@ -258,6 +272,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             Controls.Add(txtNombre);
             Controls.Add(txtDescripcion);
             Controls.Add(cmbCategoria);
+            Controls.Add(cmbMarca);
             Controls.Add(nudPrecioCompra);
             Controls.Add(nudPrecioVenta);
             Controls.Add(nudStock);

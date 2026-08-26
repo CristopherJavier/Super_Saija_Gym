@@ -11,7 +11,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmTipoMembresiaDetalle()
         {
             InitializeComponent();
-            txtNombre.KeyPress += txtNombre_KeyPress;
         }
 
         public FrmTipoMembresiaDetalle(TipoMembresia tipo)
@@ -20,16 +19,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             InitializeComponent();
             Text = "Editar tipo de membresía";
             lblTitulo.Text = Text;
-            txtNombre.KeyPress += txtNombre_KeyPress;
             CargarTipo();
-        }
-
-        private void txtNombre_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
         }
 
         private void CargarTipo()
