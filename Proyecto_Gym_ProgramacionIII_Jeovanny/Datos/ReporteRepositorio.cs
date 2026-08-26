@@ -6,7 +6,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
 {
     public static class ReporteRepositorio
     {
-        public static async Task<DataTable> ObtenerBalanceClientesAsync()
+        public static async Task<DataTable> ObtenerBalanceClientesAsync(string cedula)
         {
             const string consulta = @"
                 SELECT c.cedula AS ""Cédula"",
@@ -28,9 +28,12 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                     GROUP BY id_cliente
                 ) cc ON cc.id_cliente = c.id_cliente
                 WHERE COALESCE(ca.saldo, 0) + COALESCE(cc.saldo, 0) > 0
+                  AND (@cedula = '' OR c.cedula = @cedula)
                 ORDER BY ""Balance pendiente"" DESC, ""Cliente"";";
 
-            return await EjecutarAsync(consulta);
+            return await EjecutarAsync(
+                consulta,
+                new NpgsqlParameter("cedula", cedula.Trim()));
         }
 
         public static async Task<DataTable> ObtenerClientesAsync(string estado)

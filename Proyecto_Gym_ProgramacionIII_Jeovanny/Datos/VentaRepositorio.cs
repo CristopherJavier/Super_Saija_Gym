@@ -240,7 +240,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             }
         }
 
-        public static async Task<List<Venta>> ListarAsync(DateTime? desde = null, DateTime? hasta = null)
+        public static async Task<List<Venta>> ListarAsync(
+            DateTime? desde = null,
+            DateTime? hasta = null,
+            string texto = "")
         {
             const string consulta = @"
                 SELECT v.id_venta,
@@ -260,6 +263,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 INNER JOIN usuarios u ON u.id_usuario = v.id_usuario
                 WHERE (@desde IS NULL OR v.fecha >= @desde)
                   AND (@hasta IS NULL OR v.fecha < @hasta)
+                  AND (
+                      @texto = ''
+                      OR COALESCE(c.nombre || ' ' || c.apellido, 'SIN CLIENTE') ILIKE @busqueda
+                      OR u.nombre_completo ILIKE @busqueda
+                      OR v.tipo_pago ILIKE @busqueda
+                      OR CAST(v.id_venta AS TEXT) ILIKE @busqueda
+                  )
                 ORDER BY v.fecha DESC;";
 
             List<Venta> ventas = new List<Venta>();
@@ -272,6 +282,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             comando.Parameters.Add("hasta", NpgsqlDbType.Timestamp).Value = hasta.HasValue
                 ? hasta.Value
                 : DBNull.Value;
+            comando.Parameters.AddWithValue("texto", texto.Trim());
+            comando.Parameters.AddWithValue("busqueda", $"%{texto.Trim()}%");
             using NpgsqlDataReader lector = await comando.ExecuteReaderAsync();
 
             while (await lector.ReadAsync())

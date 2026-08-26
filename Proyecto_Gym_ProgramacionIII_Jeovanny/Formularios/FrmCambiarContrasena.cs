@@ -30,6 +30,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 return false;
             }
 
+            if (txtContrasenaNueva.Text.Length < 4)
+            {
+                lblMensaje.Text = "La contraseña nueva debe tener al menos 4 caracteres.";
+                txtContrasenaNueva.Focus();
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(txtConfirmarContrasena.Text))
             {
                 lblMensaje.Text = "Debe confirmar la contraseña nueva.";

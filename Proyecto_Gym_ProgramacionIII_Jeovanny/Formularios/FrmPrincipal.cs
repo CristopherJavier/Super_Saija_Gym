@@ -14,7 +14,11 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             InitializeComponent();
             ConfigurarDesplazamientoMenu();
             InicializarMenusMovimientosReportes();
+            btnReporteBalanceClientes.Text = "BALANCE PENDIENTE";
+            btnReporteCargos.Text = "CARGOS POR ESTADO";
+            btnInventario.Text = "ENTRADAS Y SALIDAS";
             InicializarMenuConfiguracion();
+            InicializarOpcionesAdministrativasConfiguracion();
             pnlOpciones.SizeChanged += pnlOpciones_SizeChanged;
             AjustarAnchoMenu();
         }
@@ -44,10 +48,51 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
 
             lblBienvenida.Text = SesionActual.NombreCompleto;
             lblRol.Text = $"Rol: {SesionActual.NombreRol}";
+            IgualarEspaciadoOpcionesMenu();
             AplicarPermisos();
             SeleccionarBoton(btnInicio);
             AjustarAnchoMenu();
             MostrarInicio();
+        }
+
+        private void IgualarEspaciadoOpcionesMenu()
+        {
+            int altoOpcion = btnClientes.Height;
+            Padding margenOpcion = btnClientes.Margin;
+            Padding espacioInterno = pnlSubmenuMantenimientos.Padding;
+
+            IgualarEspaciadoSubmenu(
+                pnlSubmenuMovimientos,
+                altoOpcion,
+                margenOpcion,
+                espacioInterno);
+            IgualarEspaciadoSubmenu(
+                pnlSubmenuReportes,
+                altoOpcion,
+                margenOpcion,
+                espacioInterno);
+            IgualarEspaciadoSubmenu(
+                pnlSubmenuConfiguracion,
+                altoOpcion,
+                margenOpcion,
+                espacioInterno);
+        }
+
+        private static void IgualarEspaciadoSubmenu(
+            FlowLayoutPanel submenu,
+            int altoOpcion,
+            Padding margenOpcion,
+            Padding espacioInterno)
+        {
+            submenu.Padding = espacioInterno;
+
+            foreach (Control opcion in submenu.Controls)
+            {
+                opcion.Height = altoOpcion;
+                opcion.Margin = margenOpcion;
+            }
+
+            submenu.Height = altoOpcion * submenu.Controls.Count;
         }
 
         private void AbrirFormularioEnPanel(Form formulario)
@@ -144,7 +189,11 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 btnConsultaCompras,
                 btnConsultaProveedores,
                 btnConsultaCobros,
-                btnCambiarContrasena
+                btnMetodosPago,
+                btnUsuarios,
+                btnRoles,
+                btnPermisos,
+                btnRolesPermisos
             };
 
             foreach (Button boton in botonesMenu)
@@ -157,47 +206,56 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
 
         private void btnMantenimientos_Click(object sender, EventArgs e)
         {
-            pnlSubmenuMantenimientos.Visible = !pnlSubmenuMantenimientos.Visible;
-            btnMantenimientos.Text = pnlSubmenuMantenimientos.Visible
-                ? "v  MANTENIMIENTOS"
-                : ">  MANTENIMIENTOS";
-            AjustarAnchoMenu();
+            AlternarSubmenu(pnlSubmenuMantenimientos, btnMantenimientos, "MANTENIMIENTOS");
         }
 
         private void btnConsultas_Click(object sender, EventArgs e)
         {
-            pnlSubmenuConsultas.Visible = !pnlSubmenuConsultas.Visible;
-            btnConsultas.Text = pnlSubmenuConsultas.Visible
-                ? "v  CONSULTAS"
-                : ">  CONSULTAS";
-            AjustarAnchoMenu();
+            AlternarSubmenu(pnlSubmenuConsultas, btnConsultas, "CONSULTAS");
         }
 
         private void btnMovimientos_Click(object? sender, EventArgs e)
         {
-            pnlSubmenuMovimientos.Visible = !pnlSubmenuMovimientos.Visible;
-            btnMovimientos.Text = pnlSubmenuMovimientos.Visible
-                ? "v  MOVIMIENTOS"
-                : ">  MOVIMIENTOS";
-            AjustarAnchoMenu();
+            AlternarSubmenu(pnlSubmenuMovimientos, btnMovimientos, "MOVIMIENTOS");
         }
 
         private void btnReportes_Click(object? sender, EventArgs e)
         {
-            pnlSubmenuReportes.Visible = !pnlSubmenuReportes.Visible;
-            btnReportes.Text = pnlSubmenuReportes.Visible
-                ? "v  REPORTES"
-                : ">  REPORTES";
-            AjustarAnchoMenu();
+            AlternarSubmenu(pnlSubmenuReportes, btnReportes, "REPORTES");
         }
 
         private void btnConfiguracion_Click(object sender, EventArgs e)
         {
-            pnlSubmenuConfiguracion.Visible = !pnlSubmenuConfiguracion.Visible;
-            btnConfiguracion.Text = pnlSubmenuConfiguracion.Visible
-                ? "v  CONFIGURACIÓN"
-                : ">  CONFIGURACIÓN";
+            AlternarSubmenu(pnlSubmenuConfiguracion, btnConfiguracion, "CONFIGURACIÓN");
+        }
+
+        private void AlternarSubmenu(
+            FlowLayoutPanel submenuSeleccionado,
+            Button botonSeleccionado,
+            string titulo)
+        {
+            bool abrir = !submenuSeleccionado.Visible;
+            CerrarSubmenus();
+            submenuSeleccionado.Visible = abrir;
+            botonSeleccionado.Text = abrir
+                ? $"v  {titulo}"
+                : $">  {titulo}";
             AjustarAnchoMenu();
+        }
+
+        private void CerrarSubmenus()
+        {
+            pnlSubmenuMantenimientos.Visible = false;
+            pnlSubmenuMovimientos.Visible = false;
+            pnlSubmenuReportes.Visible = false;
+            pnlSubmenuConsultas.Visible = false;
+            pnlSubmenuConfiguracion.Visible = false;
+
+            btnMantenimientos.Text = ">  MANTENIMIENTOS";
+            btnMovimientos.Text = ">  MOVIMIENTOS";
+            btnReportes.Text = ">  REPORTES";
+            btnConsultas.Text = ">  CONSULTAS";
+            btnConfiguracion.Text = ">  CONFIGURACIÓN";
         }
 
         private void AjustarAnchoMenu()
@@ -483,6 +541,36 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             formulario.ShowDialog(this);
         }
 
+        private void btnMetodosPago_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnMetodosPago);
+            AbrirFormularioEnPanel(new FrmMetodosPago());
+        }
+
+        private void btnUsuarios_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnUsuarios);
+            AbrirFormularioEnPanel(new FrmUsuarios());
+        }
+
+        private void btnRoles_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnRoles);
+            AbrirFormularioEnPanel(new FrmRoles());
+        }
+
+        private void btnPermisos_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnPermisos);
+            AbrirFormularioEnPanel(new FrmPermisos());
+        }
+
+        private void btnRolesPermisos_Click(object? sender, EventArgs e)
+        {
+            SeleccionarBoton(btnRolesPermisos);
+            AbrirFormularioEnPanel(new FrmRolesPermisos());
+        }
+
         private void AplicarPermisos()
         {
             bool puedeClientes = SesionActual.TienePermiso(ClavesPermisos.MantenimientoClientes);
@@ -502,7 +590,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnCategoriasProductos.Visible = puedeCategorias;
             btnProductos.Visible = puedeProductos;
             btnProveedores.Visible = puedeProveedores;
-            pnlSubmenuMantenimientos.Height = 40 * new[]
+            int altoOpcionMenu = btnClientes.Height;
+
+            pnlSubmenuMantenimientos.Height = altoOpcionMenu * new[]
             {
                 puedeClientes,
                 puedeEntrenadores,
@@ -545,7 +635,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnAbonos.Visible = puedeAbonos;
             btnInventario.Visible = puedeInventario;
             btnAsistencias.Visible = puedeAsistencias;
-            pnlSubmenuMovimientos.Height = 40 * new[]
+            pnlSubmenuMovimientos.Height = altoOpcionMenu * new[]
             {
                 puedeAsignarMembresia,
                 puedeRenovarMembresia,
@@ -586,7 +676,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnReporteVentas.Visible = puedeReporteVentas;
             btnReporteCompras.Visible = puedeReporteCompras;
             btnReporteCargos.Visible = puedeReporteCargos;
-            pnlSubmenuReportes.Height = 40 * new[]
+            pnlSubmenuReportes.Height = altoOpcionMenu * new[]
             {
                 puedeReporteBalance,
                 puedeReporteClientes,
@@ -625,7 +715,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             btnConsultaCompras.Visible = puedeConsultaCompras;
             btnConsultaProveedores.Visible = puedeConsultaProveedores;
             btnConsultaCobros.Visible = puedeConsultaCobros;
-            pnlSubmenuConsultas.Height = 40 * new[]
+            pnlSubmenuConsultas.Height = altoOpcionMenu * new[]
             {
                 puedeConsultaEntrenadores,
                 puedeConsultaMembresias,
@@ -649,9 +739,30 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 || puedeConsultaProveedores
                 || puedeConsultaCobros;
 
-            btnCambiarContrasena.Visible = true;
-            pnlSubmenuConfiguracion.Height = 40;
-            btnConfiguracion.Visible = true;
+            bool puedeMetodosPago = SesionActual.TienePermiso(ClavesPermisos.ConfiguracionMetodosPago);
+            bool puedeUsuarios = SesionActual.TienePermiso(ClavesPermisos.ConfiguracionUsuarios);
+            bool puedeRoles = SesionActual.TienePermiso(ClavesPermisos.ConfiguracionRoles);
+            bool puedePermisos = SesionActual.TienePermiso(ClavesPermisos.ConfiguracionPermisos);
+            bool puedeRolesPermisos = SesionActual.TienePermiso(ClavesPermisos.ConfiguracionRolesPermisos);
+
+            btnMetodosPago.Visible = puedeMetodosPago;
+            btnUsuarios.Visible = puedeUsuarios;
+            btnRoles.Visible = puedeRoles;
+            btnPermisos.Visible = puedePermisos;
+            btnRolesPermisos.Visible = puedeRolesPermisos;
+            pnlSubmenuConfiguracion.Height = altoOpcionMenu * new[]
+            {
+                puedeMetodosPago,
+                puedeUsuarios,
+                puedeRoles,
+                puedePermisos,
+                puedeRolesPermisos
+            }.Count(permitido => permitido);
+            btnConfiguracion.Visible = puedeMetodosPago
+                || puedeUsuarios
+                || puedeRoles
+                || puedePermisos
+                || puedeRolesPermisos;
 
             if (!btnMantenimientos.Visible)
             {

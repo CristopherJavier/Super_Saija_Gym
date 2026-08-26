@@ -144,7 +144,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             }
         }
 
-        public static async Task<List<ReservaClase>> ListarAsync(DateTime? desde = null)
+        public static async Task<List<ReservaClase>> ListarAsync(
+            DateTime? desde = null,
+            string texto = "")
         {
             const string consulta = @"
                 SELECT r.id_reserva,
@@ -153,6 +155,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                        r.id_horario,
                        cl.nombre AS nombre_clase,
                        e.nombre || ' ' || e.apellido AS nombre_entrenador,
+                       h.hora_inicio,
+                       h.hora_fin,
                        r.fecha_clase,
                        r.fecha_reserva,
                        r.estado
@@ -162,6 +166,15 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 INNER JOIN clases_actividades cl ON cl.id_clase = h.id_clase
                 INNER JOIN entrenadores e ON e.id_entrenador = h.id_entrenador
                 WHERE (@desde IS NULL OR r.fecha_clase >= @desde)
+                  AND (
+                      @texto = ''
+                      OR c.nombre ILIKE @busqueda
+                      OR c.apellido ILIKE @busqueda
+                      OR cl.nombre ILIKE @busqueda
+                      OR e.nombre ILIKE @busqueda
+                      OR e.apellido ILIKE @busqueda
+                      OR CAST(r.id_reserva AS TEXT) ILIKE @busqueda
+                  )
                 ORDER BY r.fecha_clase DESC, r.fecha_reserva DESC;";
 
             List<ReservaClase> reservas = new List<ReservaClase>();
@@ -171,6 +184,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             comando.Parameters.Add("desde", NpgsqlDbType.Date).Value = desde.HasValue
                 ? desde.Value.Date
                 : DBNull.Value;
+            comando.Parameters.AddWithValue("texto", texto.Trim());
+            comando.Parameters.AddWithValue("busqueda", $"%{texto.Trim()}%");
             using NpgsqlDataReader lector = await comando.ExecuteReaderAsync();
 
             while (await lector.ReadAsync())
@@ -192,6 +207,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                        r.id_horario,
                        cl.nombre AS nombre_clase,
                        e.nombre || ' ' || e.apellido AS nombre_entrenador,
+                       h.hora_inicio,
+                       h.hora_fin,
                        r.fecha_clase,
                        r.fecha_reserva,
                        r.estado
@@ -236,6 +253,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 IdHorario = lector.GetInt32(lector.GetOrdinal("id_horario")),
                 NombreClase = lector.GetString(lector.GetOrdinal("nombre_clase")),
                 NombreEntrenador = lector.GetString(lector.GetOrdinal("nombre_entrenador")),
+                HoraInicio = lector.GetTimeSpan(lector.GetOrdinal("hora_inicio")),
+                HoraFin = lector.GetTimeSpan(lector.GetOrdinal("hora_fin")),
                 FechaClase = lector.GetDateTime(lector.GetOrdinal("fecha_clase")),
                 FechaReserva = lector.GetDateTime(lector.GetOrdinal("fecha_reserva")),
                 Estado = lector.GetBoolean(lector.GetOrdinal("estado"))

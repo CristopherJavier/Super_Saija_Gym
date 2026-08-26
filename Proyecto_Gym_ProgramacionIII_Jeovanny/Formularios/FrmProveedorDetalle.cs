@@ -12,7 +12,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmProveedorDetalle()
         {
             InitializeComponent();
-            txtNombre.KeyPress += txtNombre_KeyPress;
             ConfigurarCamposNumericos();
             txtTelefono.Mask = string.Empty;
         }
@@ -23,7 +22,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             InitializeComponent();
             Text = "Editar proveedor";
             lblTitulo.Text = Text;
-            txtNombre.KeyPress += txtNombre_KeyPress;
             ConfigurarCamposNumericos();
             txtNombre.Text = proveedor.Nombre;
             txtRncCedula.Text = proveedor.RncCedula;
@@ -42,14 +40,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             txtTelefono.ResetOnSpace = false;
             txtTelefono.Enter += txtTelefono_Enter;
             txtTelefono.Leave += txtTelefono_Leave;
-        }
-
-        private void txtNombre_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
         }
 
         private async void btnGuardar_Click(object? sender, EventArgs e)

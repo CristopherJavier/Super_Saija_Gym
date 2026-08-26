@@ -163,8 +163,16 @@ Todas las tablas tienen clave primaria. Las relaciones utilizan claves foráneas
 
 Los datos repetibles se separan en tablas de detalle y las relaciones N:M utilizan tablas intermedias. Los nombres de clientes, productos, proveedores, métodos y usuarios no se copian en las transacciones; se obtienen mediante sus claves foráneas. Esta separación permite explicar que el diseño evita duplicaciones y mantiene la Tercera Forma Normal.
 
-## 10. Explicación para el profesor
+## 10. Relación con el código
+
+Los modelos que representan estas tablas se encuentran en la carpeta `Modelos/`. Los repositorios que ejecutan las consultas SQL parametrizadas están en `Datos/`. Los formularios de mantenimiento permiten crear, editar y cambiar el estado de cada entidad. Los formularios de consulta muestran los registros filtrados por texto de búsqueda.
+
+Los movimientos (ventas, compras, cobros, abonos, reservas, asistencias, inventario y generación de cargos) utilizan transacciones de PostgreSQL para garantizar que el stock, los saldos y los cupos se actualicen de forma consistente. Los reportes consultan las tablas y presentan los resultados dentro de la aplicación.
+
+Los permisos se organizan en cinco módulos: Mantenimientos, Movimientos, Reportes, Consultas y Configuración. El rol ADMIN recibe todos los permisos automáticamente. Los demás roles solo ven las secciones que tienen asignadas.
+
+## 11. Explicación para el profesor
 
 La base distingue los datos principales de los movimientos. La venta y la compra utilizan una cabecera para la información general y un detalle para sus productos. Los cargos conservan el monto original y el saldo pendiente. Las membresías conservan el historial de asignaciones y renovaciones. Las claves foráneas impiden relacionar registros inexistentes y los índices aceleran las consultas solicitadas por cliente y por fecha.
 
-En esta fase se preparó la estructura de datos. Los repositorios, formularios y reglas de operación se desarrollarán en las fases funcionales correspondientes.
+El diseño completo incluye 27 tablas, 41 permisos, consultas parametrizadas y contraseñas protegidas con hash y sal. Cada pantalla de mantenimiento respeta los límites de PostgreSQL y valida los datos antes de enviarlos a la base de datos.

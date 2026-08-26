@@ -11,15 +11,18 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             const string consulta = @"
                 SELECT p.id_producto, p.codigo, p.nombre, p.descripcion,
                        p.id_categoria, c.nombre AS nombre_categoria,
+                       p.id_marca, COALESCE(m.nombre, '') AS nombre_marca,
                        p.precio_compra, p.precio_venta, p.stock, p.stock_minimo,
                        p.imagen, p.estado
                 FROM productos p
                 INNER JOIN categorias_productos c ON c.id_categoria = p.id_categoria
+                LEFT JOIN marcas m ON m.id_marca = p.id_marca
                 WHERE @texto = ''
                    OR p.codigo ILIKE @busqueda
                    OR p.nombre ILIKE @busqueda
                    OR p.descripcion ILIKE @busqueda
                    OR c.nombre ILIKE @busqueda
+                   OR m.nombre ILIKE @busqueda
                 ORDER BY p.estado DESC, p.nombre;";
 
             List<Producto> productos = new List<Producto>();
@@ -33,6 +36,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             {
                 int indiceDescripcion = lector.GetOrdinal("descripcion");
                 int indiceImagen = lector.GetOrdinal("imagen");
+                int indiceMarca = lector.GetOrdinal("id_marca");
                 productos.Add(new Producto
                 {
                     IdProducto = lector.GetInt32(lector.GetOrdinal("id_producto")),
@@ -41,6 +45,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                     Descripcion = lector.IsDBNull(indiceDescripcion) ? string.Empty : lector.GetString(indiceDescripcion),
                     IdCategoria = lector.GetInt32(lector.GetOrdinal("id_categoria")),
                     NombreCategoria = lector.GetString(lector.GetOrdinal("nombre_categoria")),
+                    IdMarca = lector.IsDBNull(indiceMarca) ? null : lector.GetInt32(indiceMarca),
+                    NombreMarca = lector.GetString(lector.GetOrdinal("nombre_marca")),
                     PrecioCompra = lector.GetDecimal(lector.GetOrdinal("precio_compra")),
                     PrecioVenta = lector.GetDecimal(lector.GetOrdinal("precio_venta")),
                     Stock = lector.GetInt32(lector.GetOrdinal("stock")),
@@ -73,11 +79,11 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
         {
             const string consulta = @"
                 INSERT INTO productos
-                    (codigo, nombre, descripcion, id_categoria, precio_compra,
-                     precio_venta, stock, stock_minimo, imagen, estado)
+                    (codigo, nombre, descripcion, id_categoria, id_marca,
+                     precio_compra, precio_venta, stock, stock_minimo, imagen, estado)
                 VALUES
-                    (@codigo, @nombre, @descripcion, @idCategoria, @precioCompra,
-                     @precioVenta, @stock, @stockMinimo, @imagen, @estado);";
+                    (@codigo, @nombre, @descripcion, @idCategoria, @idMarca,
+                     @precioCompra, @precioVenta, @stock, @stockMinimo, @imagen, @estado);";
             await EjecutarGuardadoAsync(consulta, producto);
         }
 
@@ -89,6 +95,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                     nombre = @nombre,
                     descripcion = @descripcion,
                     id_categoria = @idCategoria,
+                    id_marca = @idMarca,
                     precio_compra = @precioCompra,
                     precio_venta = @precioVenta,
                     stock = @stock,
@@ -119,6 +126,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             comando.Parameters.AddWithValue("nombre", producto.Nombre.Trim());
             comando.Parameters.Add("descripcion", NpgsqlDbType.Varchar).Value = string.IsNullOrWhiteSpace(producto.Descripcion) ? DBNull.Value : producto.Descripcion.Trim();
             comando.Parameters.AddWithValue("idCategoria", producto.IdCategoria);
+            comando.Parameters.Add("idMarca", NpgsqlDbType.Integer).Value = producto.IdMarca.HasValue ? producto.IdMarca.Value : DBNull.Value;
             comando.Parameters.AddWithValue("precioCompra", producto.PrecioCompra);
             comando.Parameters.AddWithValue("precioVenta", producto.PrecioVenta);
             comando.Parameters.AddWithValue("stock", producto.Stock);

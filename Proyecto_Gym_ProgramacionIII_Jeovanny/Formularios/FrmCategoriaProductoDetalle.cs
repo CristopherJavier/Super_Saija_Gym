@@ -11,7 +11,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         public FrmCategoriaProductoDetalle()
         {
             InitializeComponent();
-            txtNombre.KeyPress += txtNombre_KeyPress;
         }
 
         public FrmCategoriaProductoDetalle(CategoriaProducto categoria)
@@ -20,18 +19,9 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             InitializeComponent();
             Text = "Editar categoría";
             lblTitulo.Text = Text;
-            txtNombre.KeyPress += txtNombre_KeyPress;
             txtNombre.Text = categoria.Nombre;
             txtDescripcion.Text = categoria.Descripcion;
             chkEstado.Checked = categoria.Estado;
-        }
-
-        private void txtNombre_KeyPress(object? sender, KeyPressEventArgs e)
-        {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != ' ' && !char.IsControl(e.KeyChar))
-            {
-                e.Handled = true;
-            }
         }
 
         private async void btnGuardar_Click(object? sender, EventArgs e)

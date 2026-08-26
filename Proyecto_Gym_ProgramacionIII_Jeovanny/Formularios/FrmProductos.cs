@@ -36,6 +36,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             dgvProductos.Columns[nameof(Producto.Codigo)]!.HeaderText = "Código";
             dgvProductos.Columns[nameof(Producto.Nombre)]!.HeaderText = "Nombre";
             dgvProductos.Columns[nameof(Producto.NombreCategoria)]!.HeaderText = "Categoría";
+            dgvProductos.Columns[nameof(Producto.NombreMarca)]!.HeaderText = "Marca";
             dgvProductos.Columns[nameof(Producto.PrecioVenta)]!.HeaderText = "Precio venta";
             dgvProductos.Columns[nameof(Producto.PrecioVenta)]!.DefaultCellStyle.Format = "N2";
             dgvProductos.Columns[nameof(Producto.Stock)]!.HeaderText = "Existencia";
@@ -44,7 +45,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             dgvProductos.Columns[nameof(Producto.Descripcion)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.IdCategoria)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.IdMarca)]!.Visible = false;
-            dgvProductos.Columns[nameof(Producto.NombreMarca)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.PrecioCompra)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.StockMinimo)]!.Visible = false;
             dgvProductos.Columns[nameof(Producto.Imagen)]!.Visible = false;

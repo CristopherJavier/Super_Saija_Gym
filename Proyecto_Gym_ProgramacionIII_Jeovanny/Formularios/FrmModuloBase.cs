@@ -10,6 +10,11 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
         protected readonly Label lblResumen;
         protected readonly DataGridView dgvDatos;
 
+        public FrmModuloBase()
+            : this("Módulo", 82)
+        {
+        }
+
         protected FrmModuloBase(string titulo, int altoCampos = 150)
         {
             BackColor = Color.White;
@@ -144,9 +149,46 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             };
             boton.FlatAppearance.BorderColor = Color.Black;
             boton.FlatAppearance.BorderSize = principal ? 0 : 1;
+            boton.Paint += (sender, e) => DibujarBotonDeshabilitado(boton, e, principal);
             boton.Click += evento;
             pnlBotones.Controls.Add(boton);
             return boton;
+        }
+
+        private static void DibujarBotonDeshabilitado(
+            Button boton,
+            PaintEventArgs e,
+            bool principal)
+        {
+            if (boton.Enabled)
+            {
+                return;
+            }
+
+            Color colorFondo = principal ? Color.Black : Color.White;
+            Color colorTexto = principal ? Color.White : Color.Black;
+            using SolidBrush fondo = new SolidBrush(colorFondo);
+            e.Graphics.FillRectangle(fondo, boton.ClientRectangle);
+
+            if (!principal)
+            {
+                e.Graphics.DrawRectangle(
+                    Pens.Black,
+                    0,
+                    0,
+                    boton.ClientSize.Width - 1,
+                    boton.ClientSize.Height - 1);
+            }
+
+            TextRenderer.DrawText(
+                e.Graphics,
+                boton.Text,
+                boton.Font,
+                boton.ClientRectangle,
+                colorTexto,
+                TextFormatFlags.HorizontalCenter
+                | TextFormatFlags.VerticalCenter
+                | TextFormatFlags.SingleLine);
         }
 
         protected static ComboBox CrearCombo()

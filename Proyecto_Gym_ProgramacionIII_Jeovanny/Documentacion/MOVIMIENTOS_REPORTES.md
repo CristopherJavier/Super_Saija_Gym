@@ -11,7 +11,11 @@ La barra lateral presenta los módulos en este orden:
 5. Consultas.
 6. Configuración.
 
-Configuración conserva únicamente la opción para cambiar la contraseña.
+Los cinco grupos desplegables funcionan como un acordeón. Al abrir Mantenimientos, Movimientos, Reportes, Consultas o Configuración, cualquier otro grupo que estuviera abierto se cierra automáticamente para mantener despejada la barra lateral.
+
+Las opciones de Movimientos, Reportes y Configuración utilizan la misma altura y separación que las opciones de Mantenimientos. La medida se toma del menú de Mantenimientos cuando abre la ventana, por lo que también se conserva el mismo aspecto cuando Windows aplica una escala de pantalla diferente.
+
+Configuración permite administrar métodos de pago, usuarios, roles, permisos y su asignación. Las contraseñas se actualizan al editar un usuario.
 
 ## Movimientos implementados
 
@@ -26,7 +30,7 @@ El mandato enumera diez procesos y también exige el registro de asistencias en 
 7. Reservas de clases: valida que la fecha coincida con el día del horario y que todavía exista cupo.
 8. Cuentas por cobrar: muestra las deudas creadas automáticamente por las ventas a crédito.
 9. Abonos: registra pagos parciales o totales sin permitir que el monto supere el saldo pendiente.
-10. Entrada y salida de inventario: actualiza el stock y no permite una salida mayor que la existencia disponible.
+10. Entradas y salidas: actualiza el inventario y no permite una salida mayor que la existencia disponible.
 11. Asistencias: registra la entrada de un cliente y permite vincularla con una reserva correspondiente al día actual.
 
 Los pagos adelantados de una membresía se manejan como un cobro de servicio realizado antes de la fecha de vencimiento del cargo. No se creó una regla adicional de saldo a favor porque el mandato indica que el cargo debe generarse antes del cobro.
@@ -42,13 +46,13 @@ Los pagos adelantados de una membresía se manejan como un cobro de servicio rea
 
 ## Reportes implementados
 
-1. Balance pendiente por cliente.
+1. Balance pendiente: muestra los saldos por cliente y permite filtrar por cédula.
 2. Clientes activos e inactivos.
 3. Membresías activas y vencidas, con días restantes y cliente.
 4. Cobros por rango de fechas.
 5. Ventas por rango de fechas.
 6. Compras por rango de fechas.
-7. Cargos pendientes y vencidos.
+7. Cargos por estado: presenta los cargos pendientes y vencidos.
 
 Los reportes se muestran dentro de la aplicación y no incluyen impresión, según la decisión tomada para esta entrega.
 

@@ -60,7 +60,10 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
             return membresias;
         }
 
-        public static async Task<List<Cargo>> ListarAsync(int? idCliente = null, bool soloPendientes = false)
+        public static async Task<List<Cargo>> ListarAsync(
+            int? idCliente = null,
+            bool soloPendientes = false,
+            string texto = "")
         {
             const string consulta = @"
                 SELECT ca.id_cargo,
@@ -77,6 +80,13 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 INNER JOIN clientes c ON c.id_cliente = ca.id_cliente
                 WHERE (@idCliente IS NULL OR ca.id_cliente = @idCliente)
                   AND (@soloPendientes = FALSE OR (ca.estado = TRUE AND ca.saldo > 0))
+                  AND (
+                      @texto = ''
+                      OR c.nombre ILIKE @busqueda
+                      OR c.apellido ILIKE @busqueda
+                      OR ca.concepto ILIKE @busqueda
+                      OR CAST(ca.id_cargo AS TEXT) ILIKE @busqueda
+                  )
                 ORDER BY ca.fecha_vencimiento, ca.id_cargo;";
 
             List<Cargo> cargos = new List<Cargo>();
@@ -87,6 +97,8 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Datos
                 ? idCliente.Value
                 : DBNull.Value;
             comando.Parameters.AddWithValue("soloPendientes", soloPendientes);
+            comando.Parameters.AddWithValue("texto", texto.Trim());
+            comando.Parameters.AddWithValue("busqueda", $"%{texto.Trim()}%");
             using NpgsqlDataReader lector = await comando.ExecuteReaderAsync();
 
             while (await lector.ReadAsync())

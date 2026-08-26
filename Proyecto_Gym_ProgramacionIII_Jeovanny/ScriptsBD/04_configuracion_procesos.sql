@@ -30,28 +30,6 @@ CREATE TABLE IF NOT EXISTS roles_permisos (
     FOREIGN KEY (id_permiso) REFERENCES permisos (id_permiso)
 );
 
-DELETE FROM roles_permisos
-WHERE id_permiso IN (
-    SELECT id_permiso
-    FROM permisos
-    WHERE clave IN (
-        'CONFIG_METODOS_PAGO',
-        'CONFIG_USUARIOS',
-        'CONFIG_ROLES',
-        'CONFIG_PERMISOS',
-        'CONFIG_ROLES_PERMISOS'
-    )
-);
-
-DELETE FROM permisos
-WHERE clave IN (
-    'CONFIG_METODOS_PAGO',
-    'CONFIG_USUARIOS',
-    'CONFIG_ROLES',
-    'CONFIG_PERMISOS',
-    'CONFIG_ROLES_PERMISOS'
-);
-
 INSERT INTO permisos (clave, nombre, descripcion)
 VALUES
     ('MANT_CLIENTES', 'Mantenimiento de clientes', 'Permite administrar clientes'),
@@ -89,8 +67,20 @@ VALUES
     ('REP_COBROS', 'Reporte de cobros', 'Permite consultar cobros por fecha'),
     ('REP_VENTAS', 'Reporte de ventas', 'Permite consultar ventas por fecha'),
     ('REP_COMPRAS', 'Reporte de compras', 'Permite consultar compras por fecha'),
-    ('REP_CARGOS', 'Reporte de cargos', 'Permite consultar cargos pendientes y vencidos')
+    ('REP_CARGOS', 'Reporte de cargos', 'Permite consultar cargos pendientes y vencidos'),
+    ('CONFIG_METODOS_PAGO', 'Configuración de métodos de pago', 'Permite administrar los métodos de pago'),
+    ('CONFIG_USUARIOS', 'Configuración de usuarios', 'Permite administrar los usuarios del sistema'),
+    ('CONFIG_ROLES', 'Configuración de roles', 'Permite administrar los roles del sistema'),
+    ('CONFIG_PERMISOS', 'Configuración de permisos', 'Permite administrar los permisos del sistema'),
+    ('CONFIG_ROLES_PERMISOS', 'Asignación de permisos', 'Permite asignar permisos a cada rol')
 ON CONFLICT (clave) DO NOTHING;
+
+INSERT INTO roles_permisos (id_rol, id_permiso)
+SELECT r.id_rol, p.id_permiso
+FROM roles r
+CROSS JOIN permisos p
+WHERE r.nombre = 'ADMIN'
+ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS marcas (
     id_marca INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

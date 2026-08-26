@@ -17,14 +17,33 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
     public class FrmReporte : FrmModuloBase
     {
         private readonly TipoReporte tipoReporte;
+        private readonly MaskedTextBox? txtCedula;
         private readonly ComboBox? cmbEstado;
         private readonly DateTimePicker? dtpDesde;
         private readonly DateTimePicker? dtpHasta;
 
+        public FrmReporte()
+            : this(TipoReporte.BalanceClientes)
+        {
+        }
+
         public FrmReporte(TipoReporte tipo)
-            : base(ObtenerTitulo(tipo), RequiereFiltros(tipo) ? 82 : 0)
+            : base(ObtenerTitulo(tipo), 82)
         {
             tipoReporte = tipo;
+
+            if (tipo == TipoReporte.BalanceClientes)
+            {
+                txtCedula = new MaskedTextBox
+                {
+                    HidePromptOnLeave = true,
+                    Mask = "000-0000000-0",
+                    PromptChar = ' ',
+                    ResetOnSpace = false,
+                    TextMaskFormat = MaskFormat.ExcludePromptAndLiterals
+                };
+                AgregarCampo("Cédula", txtCedula, 210);
+            }
 
             if (tipo == TipoReporte.Clientes
                 || tipo == TipoReporte.Membresias
@@ -47,24 +66,35 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 AgregarCampo("Hasta", dtpHasta, 180);
             }
 
-            AgregarBoton("GENERAR", btnGenerar_Click);
+            AgregarBoton("BUSCAR", btnBuscar_Click);
             AgregarBoton("LIMPIAR", btnLimpiar_Click, false);
             Load += FrmReporte_Load;
         }
 
         private async void FrmReporte_Load(object? sender, EventArgs e)
         {
-            await GenerarAsync();
+            await BuscarAsync();
         }
 
-        private async Task GenerarAsync()
+        private async Task BuscarAsync()
         {
             try
             {
                 LimpiarMensaje();
+
+                if (txtCedula is not null
+                    && txtCedula.Text.Length > 0
+                    && !txtCedula.MaskCompleted)
+                {
+                    lblMensaje.Text = "La cédula debe contener exactamente 11 dígitos.";
+                    txtCedula.Focus();
+                    return;
+                }
+
                 DataTable datos = tipoReporte switch
                 {
-                    TipoReporte.BalanceClientes => await ReporteRepositorio.ObtenerBalanceClientesAsync(),
+                    TipoReporte.BalanceClientes => await ReporteRepositorio.ObtenerBalanceClientesAsync(
+                        txtCedula?.Text ?? string.Empty),
                     TipoReporte.Clientes => await ReporteRepositorio.ObtenerClientesAsync(
                         cmbEstado?.SelectedItem?.ToString() ?? "TODOS"),
                     TipoReporte.Membresias => await ReporteRepositorio.ObtenerMembresiasAsync(
@@ -92,13 +122,15 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             }
         }
 
-        private async void btnGenerar_Click(object? sender, EventArgs e)
+        private async void btnBuscar_Click(object? sender, EventArgs e)
         {
-            await GenerarAsync();
+            await BuscarAsync();
         }
 
         private async void btnLimpiar_Click(object? sender, EventArgs e)
         {
+            txtCedula?.Clear();
+
             if (cmbEstado is not null && cmbEstado.Items.Count > 0)
             {
                 cmbEstado.SelectedIndex = 0;
@@ -110,7 +142,7 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
                 dtpHasta.Value = DateTime.Today;
             }
 
-            await GenerarAsync();
+            await BuscarAsync();
         }
 
         private void CargarEstados()
@@ -193,11 +225,6 @@ namespace Proyecto_Gym_ProgramacionIII_Jeovanny.Formularios
             }
 
             lblResumen.Text = $"Registros: {datos.Rows.Count}   Total: {total:N2}";
-        }
-
-        private static bool RequiereFiltros(TipoReporte tipo)
-        {
-            return tipo != TipoReporte.BalanceClientes;
         }
 
         private static string ObtenerTitulo(TipoReporte tipo)
